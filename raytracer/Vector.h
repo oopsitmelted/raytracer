@@ -11,6 +11,11 @@ public:
 		return Vector(x + obj.x, y + obj.y, z + obj.z);
 	}
 
+	Vector operator*(int i)
+	{
+		return Vector(x * i, y * i, z * i);
+	}
+
 	float dot(Vector const& obj)
 	{
 		return (x * obj.x + y * obj.y + z * obj.z + w * obj.w);

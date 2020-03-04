@@ -3,14 +3,25 @@
 #include <vector>
 #include <cassert>
 #include <iostream>
+#include <algorithm>
+#include <string>
 
 class Canvas
 {
 private:
 	std::vector<Color> canvas;
+	unsigned int scaleAndLimit(float f)
+	{
+		int val = static_cast<int>(f * 255 + 0.5);
+
+		val = std::min(val, 255);
+		val = std::max(val, 0);
+
+		return val;
+	}
 
 public:
-	const int width, height;
+	const unsigned int width, height;
 
 	Canvas(int w, int h) : width(w), height(h), canvas(w * h) 
 	{
@@ -36,6 +47,32 @@ public:
 
 	friend std::ostream& operator<<(std::ostream& os, Canvas& c)
 	{
+		std::string line;
+
+		// Header
+		os << "P3\n" << c.width << " " << c.height << '\n' << "255\n";
+
+		// Pixel values
+		for (int y = 0; y < c.height; y++)
+		{
+			line.clear();
+			for (int x = 0; x < c.width; x++)
+			{
+				if (line.length() > (70 - 12))
+				{
+					os << line << std::endl;
+					line.clear();
+				}
+
+				Color color = c.pixel_at(x, y);
+				line.append(std::to_string(c.scaleAndLimit(color.red)) + ' ');
+				line.append(std::to_string(c.scaleAndLimit(color.green)) + ' ');
+				line.append(std::to_string(c.scaleAndLimit(color.blue)) + ' ');
+
+			}
+			os << line << std::endl;
+		}
+		os << std::endl;
 		return os;
 	}
 };

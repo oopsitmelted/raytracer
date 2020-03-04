@@ -1,5 +1,7 @@
 #include "pch.h"
 #include <cmath>
+#include <iostream>
+#include <sstream>
 #include "../raytracer/Tuple.h"
 #include "../raytracer/Point.h"
 #include "../raytracer/Vector.h"
@@ -224,4 +226,55 @@ TEST(Canvas, readwritepixel)
     EXPECT_FLOAT_EQ(c.pixel_at(2, 3).red, 1.0f);
     EXPECT_FLOAT_EQ(c.pixel_at(2, 3).green, 0.0f);
     EXPECT_FLOAT_EQ(c.pixel_at(2, 3).blue, 0.0f);
+}
+
+TEST(Canvas, serialize)
+{
+    std::ostringstream s;
+    Canvas c{ 5, 3 };
+
+    Color c1{ 1.5f, 0.0f, 0.0f };
+    Color c2{ 0.0f, 0.5f, 0.0f };
+    Color c3{ -0.5f, 0.0f, 1.0f };
+
+    c.write_pixel(0, 0, c1);
+    c.write_pixel(2, 1, c2);
+    c.write_pixel(4, 2, c3);
+
+    s << c;
+    EXPECT_EQ(s.str(), 
+        "P3\n"
+        "5 3\n"
+        "255\n"
+        "255 0 0 0 0 0 0 0 0 0 0 0 0 0 0 \n"
+        "0 0 0 0 0 0 0 128 0 0 0 0 0 0 0 \n"
+        "0 0 0 0 0 0 0 0 0 0 0 0 0 0 255 \n"
+        "\n");
+}
+
+TEST(Canvas, serializelonglines)
+{
+    std::ostringstream s;
+    Canvas c{ 11, 2 };
+
+    Color color{ 1.0f, 0.8f, 0.6f };
+
+    for (int y = 0; y < c.height; y++)
+        for (int x = 0; x < c.width; x++)
+        {
+            c.write_pixel(x, y, color);
+        }
+
+    s << c;
+    EXPECT_EQ(s.str(),
+        "P3\n"
+        "11 2\n"
+        "255\n"
+        "255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 \n"
+        "255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 \n"
+        "255 204 153 \n"
+        "255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 \n"
+        "255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 \n"
+        "255 204 153 \n"
+        "\n");
 }
