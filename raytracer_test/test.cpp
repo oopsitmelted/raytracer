@@ -7,6 +7,7 @@
 #include "../raytracer/Vector.h"
 #include "../raytracer/Color.h"
 #include "../raytracer/Canvas.h"
+#include "../raytracer/Matrix.h"
 
 constexpr float epsilon = 0.00001f;
 
@@ -277,4 +278,201 @@ TEST(Canvas, serializelonglines)
         "255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 \n"
         "255 204 153 \n"
         "\n");
+}
+
+TEST(Matrix, constructor)
+{
+    TWO_D_ARRAY d{ \
+        {1, 2, 3, 4}, \
+        {5.5, 6.5, 7.5, 8.5}, \
+        {9, 10, 11, 12}, \
+        {13.5, 14.5, 15.5, 16.5} };
+
+    Matrix m{ d };
+
+    EXPECT_FLOAT_EQ(m.get(0, 0), 1);
+    EXPECT_FLOAT_EQ(m.get(0, 3), 4);
+    EXPECT_FLOAT_EQ(m.get(1, 0), 5.5);
+    EXPECT_FLOAT_EQ(m.get(1, 2), 7.5);
+    EXPECT_FLOAT_EQ(m.get(2, 2), 11);
+    EXPECT_FLOAT_EQ(m.get(3, 0), 13.5);
+    EXPECT_FLOAT_EQ(m.get(3, 2), 15.5);
+
+
+    d = { {-3, 5}, {1, -2} };
+    m = Matrix{ d };
+
+    EXPECT_FLOAT_EQ(m.get(0, 0), -3);
+    EXPECT_FLOAT_EQ(m.get(0, 1), 5);
+    EXPECT_FLOAT_EQ(m.get(1, 0), 1);
+    EXPECT_FLOAT_EQ(m.get(1, 1), -2);
+}
+
+TEST(Matrix, equality)
+{
+    TWO_D_ARRAY d = {
+        {1, 2, 3, 4}, \
+        {5, 6, 7, 8}, \
+        {9, 10, 11, 12}, \
+        {13, 14, 15, 16} };
+
+    TWO_D_ARRAY e = {
+        {1, 2, 3, 4}, \
+        {5, 6, 7, 8}, \
+        {9, 10, 11, 12}, \
+        {13, 14, 15, 16} };
+
+    EXPECT_EQ(d == e, true);
+
+    e = {
+        {2, 3, 4, 5}, \
+        {6, 7, 8, 9}, \
+        {8 ,7, 6, 5}, \
+        {4, 3, 2, 1} };
+
+    EXPECT_EQ(d != e, true);
+}
+
+TEST(Matrix, multiply)
+{
+    TWO_D_ARRAY d {
+    {1, 2, 3, 4}, \
+    {5, 6, 7, 8}, \
+    {9, 8, 7, 6}, \
+    {5, 4, 3, 2} };
+
+    TWO_D_ARRAY e {
+    {-2, 1, 2, 3}, \
+    {3, 2, 1, -1}, \
+    {4, 3, 6, 5}, \
+    {1, 2, 7, 8} };
+
+    Matrix m = Matrix{ d } * Matrix{ e };
+
+    TWO_D_ARRAY prod{
+    {20, 22, 50, 48}, \
+    {44, 54, 114, 108}, \
+    {40, 58, 110, 102}, \
+    {16, 26, 46, 42} };
+
+    EXPECT_EQ(m == Matrix{ prod }, true);
+
+    d = {
+    {1, 2, 3, 4}, \
+    {2, 4, 4, 2}, \
+    {8, 6, 4, 1}, \
+    {0, 0, 0, 1} };
+
+    Tuple t{ 1, 2, 3, 1 };
+
+    t = Matrix{ d } * t;
+
+    EXPECT_EQ(t == Tuple(18, 24, 33, 1), true);
+}
+
+TEST(Matrix, identity)
+{
+    TWO_D_ARRAY d{
+    {0, 1, 2, 4}, \
+    {1, 2, 4, 8}, \
+    {2, 4, 8, 16}, \
+    {4, 8, 16, 32} };
+
+    Matrix m = Matrix{ d } * Matrix::identity(4);
+
+    EXPECT_EQ(Matrix{ d } == m, true);
+}
+
+TEST(Matrix, transpose)
+{
+    TWO_D_ARRAY d{
+    {0, 9, 3, 0}, \
+    {9, 8, 0, 8}, \
+    {1, 8, 5, 3}, \
+    {0, 0, 5, 8} };
+
+    TWO_D_ARRAY e{
+    {0, 9, 1, 0}, \
+    {9, 8, 8, 0}, \
+    {3, 0, 5, 5}, \
+    {0, 8, 3, 8} };
+
+    EXPECT_EQ(Matrix{ d }.transpose() == Matrix{ e }, true);
+
+    EXPECT_EQ(Matrix::identity(4) == Matrix::identity(4).transpose(), true);
+}
+
+TEST(Matrix, determinant)
+{
+    TWO_D_ARRAY d{
+        {1, 5}, \
+        {-3, 2} };
+
+    EXPECT_FLOAT_EQ(Matrix{ d }.determinant(), 17);
+}
+
+TEST(Matrix, submatrix)
+{
+    TWO_D_ARRAY d{
+        {1, 5, 0}, \
+        {-3, 2, 7}, \
+        {0, 6, -3} };
+
+    TWO_D_ARRAY e{
+        {-3, 2}, \
+        {0, 6} };
+
+    EXPECT_EQ(Matrix{ d }.submatrix(0, 2) == Matrix{ e }, true);
+
+    d = {
+        {-6, 1, 1, 6}, \
+        {-8, 5, 8, 6}, \
+        {-1, 0, 8, 2}, \
+        {-7, 1, -1, 1} };
+
+    e = {
+        {-6, 1, 6}, \
+        {-8, 8, 6}, \
+        {-7, -1, 1} };
+
+    EXPECT_EQ(Matrix{ d }.submatrix(2, 1) == Matrix{ e }, true);
+}
+
+TEST(Matrix, minor)
+{
+    TWO_D_ARRAY d{
+        {3, 5, 0}, \
+        {2, -1, -7}, \
+        {6, -1, 5} };
+
+    EXPECT_FLOAT_EQ(Matrix{ d }.minor(1, 0), 25);
+    EXPECT_FLOAT_EQ(Matrix{ d }.minor(0, 0), -12);
+    EXPECT_FLOAT_EQ(Matrix{ d }.cofactor(0, 0), -12);
+    EXPECT_FLOAT_EQ(Matrix{ d }.minor(1, 0), 25);
+    EXPECT_FLOAT_EQ(Matrix{ d }.cofactor(1, 0), -25);
+}
+
+TEST(Matrix, largedeterminant)
+{
+    TWO_D_ARRAY d{
+        {1, 2, 6}, \
+        {-5, 8, -4}, \
+        {2, 6, 4} };
+
+    EXPECT_FLOAT_EQ(Matrix{ d }.cofactor(0, 0), 56);
+    EXPECT_FLOAT_EQ(Matrix{ d }.cofactor(0, 1), 12);
+    EXPECT_FLOAT_EQ(Matrix{ d }.cofactor(0, 2), -46);
+    EXPECT_FLOAT_EQ(Matrix{ d }.determinant(), -196);
+
+    d = {
+        {-2, -8, 3, 5}, \
+        {-3, 1, 7, 3}, \
+        {1, 2, -9, 6}, \
+        {-6, 7, 7, -9} };
+
+    EXPECT_FLOAT_EQ(Matrix{ d }.cofactor(0, 0), 690);
+    EXPECT_FLOAT_EQ(Matrix{ d }.cofactor(0, 1), 447);
+    EXPECT_FLOAT_EQ(Matrix{ d }.cofactor(0, 2), 210);
+    EXPECT_FLOAT_EQ(Matrix{ d }.cofactor(0, 3), 51);
+    EXPECT_FLOAT_EQ(Matrix{ d }.determinant(), -4071);
 }
