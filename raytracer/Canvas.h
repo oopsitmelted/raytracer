@@ -1,5 +1,6 @@
 #pragma once
 #include "color.h"
+#include <cstdio>
 #include <vector>
 #include <cassert>
 #include <iostream>
@@ -48,6 +49,7 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, Canvas& c)
 	{
 		std::string line;
+		char c_line[100];
 
 		// Header
 		os << "P3\n" << c.width << " " << c.height << '\n' << "255\n";
@@ -65,10 +67,9 @@ public:
 				}
 
 				Color color = c.pixel_at(x, y);
-				line.append(std::to_string(c.scaleAndLimit(color.red)) + ' ');
-				line.append(std::to_string(c.scaleAndLimit(color.green)) + ' ');
-				line.append(std::to_string(c.scaleAndLimit(color.blue)) + ' ');
-
+				snprintf(c_line, sizeof(c_line), "%d %d %d ", 
+					c.scaleAndLimit(color.red), c.scaleAndLimit(color.green), c.scaleAndLimit(color.blue));
+				line.append(c_line);
 			}
 			os << line << std::endl;
 		}

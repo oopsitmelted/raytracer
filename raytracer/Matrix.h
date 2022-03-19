@@ -2,6 +2,8 @@
 #include <vector>
 #include <cassert>
 #include "Tuple.h"
+#include "Vector.h"
+#include "Point.h"
 
 #define TWO_D_ARRAY std::vector<std::vector<float>>
 
@@ -43,8 +45,9 @@ public:
 		rows = num_rows;
 	}
 
-	static Matrix identity(int order)
+	static Matrix identity()
 	{
+		int order = 4;
 		Matrix n(order, order);
 		for (int i = 0; i < order; i++)
 		{
@@ -113,6 +116,90 @@ public:
 		return temp;
 	}
 
+	Matrix inverse()
+	{
+		float det = determinant();
+
+		assert(det != 0);
+
+		Matrix m2 = Matrix(rows, cols);
+
+		for (int row = 0; row < rows; row++)
+			for (int col = 0; col < cols; col++)
+			{
+				float c = cofactor(row, col);
+				m2.set(col, row, c / det);
+			}
+
+		return m2;
+	}
+
+	Matrix translate(float x, float y, float z)
+	{
+		Matrix t = Matrix::identity();
+		t.set(0, 3, x);
+		t.set(1, 3, y);
+		t.set(2, 3, z);
+
+		return t * *this;
+	}
+
+	Matrix scale(float x, float y, float z)
+	{
+		Matrix t = Matrix::identity();
+		t.set(0, 0, x);
+		t.set(1, 1, y);
+		t.set(2, 2, z);
+
+		return t * *this;
+	}
+
+	Matrix rotate_x(float r)
+	{
+		Matrix t = Matrix::identity();
+		t.set(1, 1, cos(r));
+		t.set(1, 2, -sin(r));
+		t.set(2, 1, sin(r));
+		t.set(2, 2, cos(r));
+
+		return t * *this;
+	}
+
+	Matrix rotate_y(float r)
+	{
+		Matrix t = Matrix::identity();
+		t.set(0, 0, cos(r));
+		t.set(0, 2, sin(r));
+		t.set(2, 0, -sin(r));
+		t.set(2, 2, cos(r));
+
+		return t * *this;
+	}
+
+	Matrix rotate_z(float r)
+	{
+		Matrix t = Matrix::identity();
+		t.set(0, 0, cos(r));
+		t.set(0, 1, -sin(r));
+		t.set(1, 0, sin(r));
+		t.set(1, 1, cos(r));
+
+		return t * *this;
+	}
+
+	Matrix shear(float x_y, float x_z, float y_x, float y_z, float z_x, float z_y)
+	{
+		Matrix t = Matrix::identity();
+		t.set(0, 1, x_y);
+		t.set(0, 2, x_z);
+		t.set(1, 0, y_x);
+		t.set(1, 2, y_z);
+		t.set(2, 0, z_x);
+		t.set(2, 1, z_y);
+
+		return t * *this;
+	}
+
 	bool operator==(Matrix& n)
 	{
 		return m == n.m;
@@ -145,6 +232,20 @@ public:
 		n.set(3, 0, t.w);
 		n = *this * n;
 		return Tuple{ n.get(0,0), n.get(1,0), n.get(2,0), n.get(3,0) };
+	}
+
+	Vector operator*(Vector& v)
+	{
+		Tuple t = *this * static_cast<Tuple&>(v);
+
+		return Vector{ t.x, t.y, t.z };
+	}
+
+	Point operator*(Point& v)
+	{
+		Tuple t = *this * static_cast<Tuple&>(v);
+
+		return Point{ t.x, t.y, t.z };
 	}
 
 	void set(unsigned int r, unsigned int c, float v)

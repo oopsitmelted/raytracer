@@ -14,12 +14,12 @@ public:
 		return sqrt(x * x + y * y + z * z);
 	}
 
-	Tuple operator+(Tuple const &obj)
+	Tuple operator+(Tuple const obj)
 	{
 		return Tuple(x + obj.x, y + obj.y, z + obj.z, w + obj.w);
 	}
 
-	Tuple operator-(Tuple const& obj)
+	Tuple operator-(Tuple const obj)
 	{
 		return Tuple(x - obj.x, y - obj.y, z - obj.z, w - obj.w);
 	}
@@ -39,7 +39,7 @@ public:
 		return Tuple(x / val, y / val, z / val, w / val);
 	}
 
-	bool operator==(Tuple const& obj)
+	bool operator==(Tuple const obj)
 	{
 		return(x == obj.x && y == obj.y && z == obj.z && w == obj.w);
 	}

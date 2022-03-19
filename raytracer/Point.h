@@ -7,9 +7,19 @@ class Point: public Tuple
 public:
 	Point(float x, float y, float z) : Tuple(x, y, z, 1.0) {};
 
-	Point operator+(Vector &obj)
+	Point operator+(Vector obj)
 	{
 		return Point(x + obj.x, y + obj.y, z + obj.z);
+	}
+
+	Point operator-(Vector obj)
+	{
+		return Point(x - obj.x, y - obj.y, z - obj.z);
+	}
+
+	Vector operator-(Point p)
+	{
+		return Vector(x - p.x, y - p.y, z - p.z);
 	}
 };
 

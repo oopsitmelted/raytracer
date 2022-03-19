@@ -8,6 +8,10 @@
 #include "../raytracer/Color.h"
 #include "../raytracer/Canvas.h"
 #include "../raytracer/Matrix.h"
+#include "../raytracer/consts.h"
+#include "../raytracer/Ray.h"
+#include "../raytracer/Sphere.h"
+#include "../raytracer/Intersection.h"
 
 constexpr float epsilon = 0.00001f;
 
@@ -378,7 +382,7 @@ TEST(Matrix, identity)
     {2, 4, 8, 16}, \
     {4, 8, 16, 32} };
 
-    Matrix m = Matrix{ d } * Matrix::identity(4);
+    Matrix m = Matrix{ d } * Matrix::identity();
 
     EXPECT_EQ(Matrix{ d } == m, true);
 }
@@ -399,7 +403,7 @@ TEST(Matrix, transpose)
 
     EXPECT_EQ(Matrix{ d }.transpose() == Matrix{ e }, true);
 
-    EXPECT_EQ(Matrix::identity(4) == Matrix::identity(4).transpose(), true);
+    EXPECT_EQ(Matrix::identity() == Matrix::identity().transpose(), true);
 }
 
 TEST(Matrix, determinant)
@@ -475,4 +479,350 @@ TEST(Matrix, largedeterminant)
     EXPECT_FLOAT_EQ(Matrix{ d }.cofactor(0, 2), 210);
     EXPECT_FLOAT_EQ(Matrix{ d }.cofactor(0, 3), 51);
     EXPECT_FLOAT_EQ(Matrix{ d }.determinant(), -4071);
+}
+
+TEST(Matrix, invertible)
+{
+    TWO_D_ARRAY d{
+        {6, 4, 4, 4}, \
+        {5, 5, 7, 6}, \
+        {4, -9, 3, -7}, \
+        {9, 1, 7, -6} };
+
+    EXPECT_FLOAT_EQ(Matrix{ d }.determinant(), -2120);
+
+    d = {
+        {-4, 2, -2, -3}, \
+        {9, 6, 2, 6}, \
+        {0, -5, 1, -5}, \
+        {0, 0, 0, 0} };
+
+    EXPECT_FLOAT_EQ(Matrix{ d }.determinant(), 0);
+}
+
+static float round_num(float f, int places)
+{
+    f = f * pow(10, places);
+    f = round(f);
+    return f / pow(10, places);
+}
+TEST(Matrix, inverse)
+{
+    TWO_D_ARRAY d{
+        {8, -5, 9, 2}, \
+        {7, 5, 6, 1}, \
+        {-6, 0, 9, 6}, \
+        {-3, 0, -9, -4} };
+
+    TWO_D_ARRAY inv{
+        {-0.15385, -0.15385, -0.28205, -0.53846}, \
+        {-0.07692, 0.12308, 0.02564, 0.03077}, \
+        {0.35897, 0.35897, 0.43590, 0.92308}, \
+        {-0.69231, -0.69231, -0.76923, -1.92308} };
+
+    Matrix d_inv = Matrix{ d }.inverse();
+
+    for (int r = 0; r < 4; r++)
+        for (int c = 0; c < 4; c++)
+        {
+            EXPECT_FLOAT_EQ(inv[r][c], round_num(d_inv.get(r,c), 5));
+        }
+
+    d = {
+        {9, 3, 0, 9}, \
+        {-5, -2, -6, -3}, \
+        {-4, 9, 6, 4}, \
+        {-7, 6, 6, 2} };
+
+    inv = {
+        {-0.04074, -0.07778, 0.14444, -0.22222}, \
+        {-0.07778, 0.03333, 0.36667, -0.33333}, \
+        {-0.02901, -0.14630, -0.10926, 0.12963}, \
+        {0.17778, 0.06667, -0.26667, 0.33333} };
+
+    d_inv = Matrix{ d }.inverse();
+
+    for (int r = 0; r < 4; r++)
+        for (int c = 0; c < 4; c++)
+        {
+            EXPECT_FLOAT_EQ(inv[r][c], round_num(d_inv.get(r, c), 5));
+        }
+
+    TWO_D_ARRAY a{
+        {3, -9, 7, 3}, \
+        {3, -8, 2, -9}, \
+        {-4, 4, 4, 1}, \
+        {-6, 5, -1, 1} };
+
+    TWO_D_ARRAY b{
+        {8, 2, 2, 2}, \
+        {3, -1, 7, 0}, \
+        {7, 0, 5, 4}, \
+        {6, -2, 0, 5} };
+
+    Matrix c = Matrix{ a } * Matrix{ b };
+    Matrix c_times_inv_b = Matrix{ c } * Matrix{ b }.inverse();
+
+    for (int r = 0; r < 4; r++)
+        for (int c = 0; c < 4; c++)
+        {
+            EXPECT_FLOAT_EQ(a[r][c], round_num(c_times_inv_b.get(r,c), 0));
+        }
+}
+
+TEST(Matrix, translate)
+{
+    Matrix t = Matrix::identity().translate(5, -3, 2);
+    Point p{ -3, 4, 5 };
+
+    EXPECT_EQ(((t * p) == Point{ 2, 1, 7 }), true);
+
+    Matrix i = t.inverse();
+
+    EXPECT_EQ(((i * p) == Point{ -8, 7, 3 }), true);
+
+    Vector v{ -3, 4, 5 };
+    EXPECT_EQ(((t * v) == v), true);
+}
+
+TEST(Matrix, scale)
+{
+    Matrix t = Matrix::identity().scale(2, 3, 4);
+    Point p{ -4, 6, 8 };
+
+    EXPECT_EQ(((t * p) == Point{ -8, 18, 32 }), true);
+
+    Vector v{ -4, 6, 8 };
+    EXPECT_EQ(((t * v) == Vector{ -8, 18, 32 }), true);
+
+    EXPECT_EQ(((t.inverse() * v) == Vector{ -2, 2, 2 }), true);
+
+    p = { 2, 3, 4 };
+    t = Matrix::identity().scale(-1, 1, 1);
+    EXPECT_EQ(((t * p) == Point{ -2, 3, 4 }), true);
+}
+
+TEST(Matrix, rotation_x)
+{
+    Point p{ 0, 1, 0 };
+    Matrix half_quarter = Matrix::identity().rotate_x(PI / 4);
+    Matrix full_quarter = Matrix::identity().rotate_x(PI / 2);
+
+    EXPECT_EQ(((half_quarter * p) == Point{ 0, static_cast<float>(sqrt(2)) / 2.0f, 
+        static_cast<float>(sqrt(2)) / 2.0f }), true);
+
+    Point p1 = full_quarter * p;
+    EXPECT_LT(abs(p1.x), epsilon);
+    EXPECT_LT(abs(p1.y), epsilon);
+    EXPECT_LT(abs(p1.z - 1), epsilon);
+
+    // Inverse
+    Point p2 = half_quarter.inverse() * p;
+    EXPECT_LT(abs(p2.x), epsilon);
+    EXPECT_LT(abs(p2.y - sqrt(2)/2), epsilon);
+    EXPECT_LT(abs(p2.z + sqrt(2)/2), epsilon);
+}
+
+TEST(Matrix, rotation_y)
+{
+    Point p{ 0, 0, 1 };
+    Matrix half_quarter = Matrix::identity().rotate_y(PI / 4);
+    Matrix full_quarter = Matrix::identity().rotate_y(PI / 2);
+
+    Point p1 = half_quarter * p;
+    EXPECT_LT(abs(p1.x - sqrt(2)/2), epsilon);
+    EXPECT_LT(abs(p1.y), epsilon);
+    EXPECT_LT(abs(p1.z - sqrt(2)/2), epsilon);
+
+    Point p2 = full_quarter * p;
+    EXPECT_LT(abs(p2.x - 1), epsilon);
+    EXPECT_LT(abs(p2.y), epsilon);
+    EXPECT_LT(abs(p2.z), epsilon);
+}
+
+TEST(Matrix, rotation_z)
+{
+    Point p{ 0, 1, 0 };
+    Matrix half_quarter = Matrix::identity().rotate_z(PI / 4);
+    Matrix full_quarter = Matrix::identity().rotate_z(PI / 2);
+
+    Point p1 = half_quarter * p;
+    EXPECT_LT(abs(p1.x + sqrt(2) / 2), epsilon);
+    EXPECT_LT(abs(p1.y - sqrt(2) / 2), epsilon);
+    EXPECT_LT(abs(p1.z), epsilon);
+
+    Point p2 = full_quarter * p;
+    EXPECT_LT(abs(p2.x + 1), epsilon);
+    EXPECT_LT(abs(p2.y), epsilon);
+    EXPECT_LT(abs(p2.z), epsilon);
+}
+
+TEST(Matrix, shear)
+{
+    Matrix s = Matrix::identity().shear(1, 0, 0, 0, 0, 0);
+    Point p{ 2, 3, 4 };
+
+    Point p1 = s * p;
+    EXPECT_EQ((p1 == Point{ 5, 3, 4 }), true);
+
+    s = Matrix::identity().shear(0, 1, 0, 0, 0, 0);
+    p1 = s * p;
+    EXPECT_EQ((p1 == Point{ 6, 3, 4 }), true);
+
+    s = Matrix::identity().shear(0, 0, 1, 0, 0, 0);
+    p1 = s * p;
+    EXPECT_EQ((p1 == Point{ 2, 5, 4 }), true);
+
+    s = Matrix::identity().shear(0, 0, 0, 1, 0, 0);
+    p1 = s * p;
+    EXPECT_EQ((p1 == Point{ 2, 7, 4 }), true);
+
+    s = Matrix::identity().shear(0, 0, 0, 0, 1, 0);
+    p1 = s * p;
+    EXPECT_EQ((p1 == Point{ 2, 3, 6 }), true);
+
+    s = Matrix::identity().shear(0, 0, 0, 0, 0, 1);
+    p1 = s * p;
+    EXPECT_EQ((p1 == Point{ 2, 3, 7 }), true);
+}
+
+TEST(Matrix, transformchain)
+{
+    Matrix t = Matrix::identity().rotate_x(PI / 2).scale(5, 5, 5).translate(10, 5, 7);
+    Point p{ 1, 0, 1 };
+
+    Point p1 = t * p;
+    EXPECT_EQ((p1 == Point{ 15, 0, 7 }), true);
+}
+
+TEST(Ray, create)
+{
+    Point origin{ 1, 2, 3 };
+    Vector direction{ 4, 5, 6 };
+
+    Ray r{ origin, direction };
+
+    EXPECT_EQ(((r.orig == origin) && (r.dir == direction)), true);
+}
+
+TEST(Ray, position)
+{
+    Point origin{ 2, 3, 4 };
+    Vector direction{ 1, 0, 0 };
+
+    Ray r{ origin, direction };
+
+    EXPECT_EQ((r.position(0) == Point{ 2,3,4 }), true);
+    EXPECT_EQ((r.position(1) == Point{ 3, 3, 4 }), true);
+    EXPECT_EQ((r.position(-1) == Point{ 1, 3, 4 }), true);
+    EXPECT_EQ((r.position(2.5) == Point{ 4.5, 3, 4 }), true);
+}
+
+TEST(Ray, sphereintersect)
+{
+    Sphere s;
+    Ray r{ Point{0,0,-5}, Vector{0,0,1} };
+
+    std::vector<Intersection> xs = r.intersects(s);
+    EXPECT_EQ(xs.size(), 2);
+    EXPECT_FLOAT_EQ(xs[0].t, 4);
+    EXPECT_FLOAT_EQ(xs[1].t, 6);
+
+    r = Ray{ Point{0, 1, -5}, Vector{0, 0, 1} };
+    xs = r.intersects(s);
+    EXPECT_EQ(xs.size(), 2);
+    EXPECT_FLOAT_EQ(xs[0].t, 5);
+    EXPECT_FLOAT_EQ(xs[1].t, 5);
+
+    r = Ray{ Point{0, 2, -5}, Vector{0, 0, 1} };
+    xs = r.intersects(s);
+    EXPECT_EQ(xs.size(), 0);
+
+    r = Ray{ Point{0, 0, 0}, Vector{0, 0, 1} };
+    xs = r.intersects(s);
+    EXPECT_EQ(xs.size(), 2);
+    EXPECT_FLOAT_EQ(xs[0].t, -1);
+    EXPECT_FLOAT_EQ(xs[1].t, 1);
+
+    r = Ray{ Point{0, 0, 5}, Vector{0, 0, 1} };
+    xs = r.intersects(s);
+    EXPECT_EQ(xs.size(), 2);
+    EXPECT_FLOAT_EQ(xs[0].t, -6);
+    EXPECT_FLOAT_EQ(xs[1].t, -4);
+}
+
+TEST(Ray, intersection)
+{
+    Sphere s;
+    Intersection i{ 3.5, s };
+    EXPECT_EQ(&s, &i.object);
+}
+
+TEST(Ray, intersections)
+{
+    Sphere s;
+    Ray r{ Point{0, 0, -5}, Vector{0, 0, 1} };
+
+    std::vector<Intersection> xs = r.intersects(s);
+    EXPECT_EQ(xs.size(), 2);
+    EXPECT_EQ(&xs[0].object, &s);
+    EXPECT_EQ(&xs[1].object, &s);
+}
+
+TEST(Ray, hit)
+{
+    Sphere s;
+    Intersection i1{ 1,s };
+    Intersection i2{ 2,s };
+    std::vector<Intersection> xs = {i1 ,i2};
+    std::optional<Intersection> hit = Ray::hit(xs);
+    EXPECT_EQ((hit ? true : false), true);
+    EXPECT_EQ((*hit == i1), true);
+
+    i1 = Intersection{ -1, s };
+    i2 = Intersection{ 1, s };
+    xs = { i1 ,i2 };
+    hit = Ray::hit(xs);
+    EXPECT_EQ((hit ? true : false), true);
+    EXPECT_EQ((*hit == i2), true);
+
+    i1 = Intersection{ -2, s };
+    i2 = Intersection{ -1, s };
+    xs = { i1 ,i2 };
+    hit = Ray::hit(xs);
+    EXPECT_EQ((hit ? true : false), false);
+
+    i1 = Intersection{ 5, s };
+    i2 = Intersection{ 7, s };
+    Intersection i3{ -3, s };
+    Intersection i4{ 2, s };
+    xs = { i1 ,i2, i3, i4 };
+    hit = Ray::hit(xs);
+    EXPECT_EQ((hit ? true : false), true);
+    EXPECT_EQ((*hit == i4), true);
+}
+
+TEST(Ray, transform)
+{
+    Ray r{ Point{1, 2, 3}, Vector{0, 1, 0} };
+    Matrix m = Matrix::identity().translate(3, 4, 5);
+
+    Ray r2 = r.tranform(m);
+    EXPECT_EQ((r2.dir == Vector{ 0, 1, 0 }), true);
+    EXPECT_EQ((r2.orig == Point{ 4, 6, 8 }), true);
+
+    m = Matrix::identity().scale(2, 3, 4);
+    r2 = r.tranform(m);
+    EXPECT_EQ((r2.dir == Vector{ 0, 3, 0 }), true);
+    EXPECT_EQ((r2.orig == Point{ 2, 6, 12 }), true);
+}
+
+TEST(Sphere, transform)
+{
+    Sphere s;
+    EXPECT_EQ((s.transform == Matrix::identity()), true);
+
+    Matrix m = Matrix::identity().translate(2, 3, 4);
+    s.transform = m;
+    EXPECT_EQ((s.transform == m), true);
 }
