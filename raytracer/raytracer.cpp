@@ -31,23 +31,17 @@ int main()
 
 #if 1
     file.open("clock.ppm");
-    Canvas c{ 1000,1000 };
+    Canvas c{ 100, 100 };
     Color col{ 1, 0, 0 };
 
-    constexpr int radius = 400;
-
-    Point origin{ 500, 500, 0 };
-    Vector v{ 0, 1, 0 };
-
-    v = v * radius;
-    origin = origin + v;
+    Point p{0, 40, 0};
 
     Matrix m = Matrix::identity();
 
     for (int i = 0; i < 12; i++)
     {
-        Vector v1 = Matrix::identity().rotate_z((PI * i) / 6) * v;
-        c.write_pixel(v1.x + 500, v1.y + 500, col);
+        Point hour = Matrix::identity().rotate_z((i * PI) / 6) * p;
+        c.write_pixel(50 + hour.x, c.height - (50 + hour.y), col);
     }
 
     file << c;

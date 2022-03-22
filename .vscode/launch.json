@@ -7,8 +7,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug",
+            "name": "RaytracerTest",
             "program": "${workspaceFolder}/build/raytracer_test",
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Raytracer",
+            "program": "${workspaceFolder}/build/raytracer",
             "args": [],
             "cwd": "${workspaceFolder}"
         }

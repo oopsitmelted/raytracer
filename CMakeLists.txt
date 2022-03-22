@@ -15,8 +15,7 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
-add_executable(
-  raytracer_test
+set(common_source
   raytracer/Canvas.cpp
   raytracer/Color.cpp
   raytracer/Intersection.cpp
@@ -27,6 +26,17 @@ add_executable(
   raytracer/Sphere.cpp
   raytracer/Tuple.cpp
   raytracer/Vector.cpp
+)
+
+add_executable(
+  raytracer
+  ${common_source}
+  raytracer/raytracer.cpp
+)
+
+add_executable(
+  raytracer_test
+  ${common_source}
   raytracer_test/test.cpp
 )
 target_link_libraries(
