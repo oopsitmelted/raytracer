@@ -1,4 +1,4 @@
-#include "pch.h"
+#include <gtest/gtest.h>
 #include <cmath>
 #include <iostream>
 #include <sstream>
@@ -351,7 +351,9 @@ TEST(Matrix, multiply)
     {4, 3, 6, 5}, \
     {1, 2, 7, 8} };
 
-    Matrix m = Matrix{ d } * Matrix{ e };
+    Matrix m_d = Matrix{d};
+    Matrix m_e = Matrix{e};
+    Matrix m = m_d * m_e;
 
     TWO_D_ARRAY prod{
     {20, 22, 50, 48}, \
@@ -359,7 +361,8 @@ TEST(Matrix, multiply)
     {40, 58, 110, 102}, \
     {16, 26, 46, 42} };
 
-    EXPECT_EQ(m == Matrix{ prod }, true);
+    Matrix p = Matrix{prod};
+    EXPECT_EQ(m == p, true);
 
     d = {
     {1, 2, 3, 4}, \
@@ -382,7 +385,9 @@ TEST(Matrix, identity)
     {2, 4, 8, 16}, \
     {4, 8, 16, 32} };
 
-    Matrix m = Matrix{ d } * Matrix::identity();
+    Matrix m_d = Matrix{ d };
+    Matrix m_i = Matrix::identity();
+    Matrix m = m_d * m_i;
 
     EXPECT_EQ(Matrix{ d } == m, true);
 }
@@ -401,9 +406,13 @@ TEST(Matrix, transpose)
     {3, 0, 5, 5}, \
     {0, 8, 3, 8} };
 
-    EXPECT_EQ(Matrix{ d }.transpose() == Matrix{ e }, true);
+    Matrix m_d = Matrix{ d };
+    Matrix m_e = Matrix{ e };
+    EXPECT_EQ(m_d.transpose() == m_e, true);
 
-    EXPECT_EQ(Matrix::identity() == Matrix::identity().transpose(), true);
+    Matrix m_i = Matrix::identity();
+    Matrix m_it = m_i.transpose();
+    EXPECT_EQ( m_i == m_it, true);
 }
 
 TEST(Matrix, determinant)
@@ -426,7 +435,9 @@ TEST(Matrix, submatrix)
         {-3, 2}, \
         {0, 6} };
 
-    EXPECT_EQ(Matrix{ d }.submatrix(0, 2) == Matrix{ e }, true);
+    Matrix m_d_sub = Matrix{ d }.submatrix(0, 2);
+    Matrix m_e = Matrix{ e };
+    EXPECT_EQ( m_d_sub == m_e, true);
 
     d = {
         {-6, 1, 1, 6}, \
@@ -439,7 +450,9 @@ TEST(Matrix, submatrix)
         {-8, 8, 6}, \
         {-7, -1, 1} };
 
-    EXPECT_EQ(Matrix{ d }.submatrix(2, 1) == Matrix{ e }, true);
+    m_d_sub = Matrix{ d }.submatrix(2, 1);
+    m_e = Matrix{ e };
+    EXPECT_EQ( m_d_sub == m_e, true);
 }
 
 TEST(Matrix, minor)
@@ -560,8 +573,11 @@ TEST(Matrix, inverse)
         {7, 0, 5, 4}, \
         {6, -2, 0, 5} };
 
-    Matrix c = Matrix{ a } * Matrix{ b };
-    Matrix c_times_inv_b = Matrix{ c } * Matrix{ b }.inverse();
+    Matrix m_a = Matrix{ a };
+    Matrix m_b = Matrix{ b };
+    Matrix c = m_a * m_b;
+    Matrix m_b_inv = Matrix{ b }.inverse();
+    Matrix c_times_inv_b = c * m_b_inv;
 
     for (int r = 0; r < 4; r++)
         for (int c = 0; c < 4; c++)
@@ -608,8 +624,12 @@ TEST(Matrix, rotation_x)
     Matrix half_quarter = Matrix::identity().rotate_x(PI / 4);
     Matrix full_quarter = Matrix::identity().rotate_x(PI / 2);
 
-    EXPECT_EQ(((half_quarter * p) == Point{ 0, static_cast<float>(sqrt(2)) / 2.0f, 
-        static_cast<float>(sqrt(2)) / 2.0f }), true);
+    Point a = half_quarter * p;
+    Point b = Point{ 0, static_cast<float>(sqrt(2)) / 2.0f, 
+        static_cast<float>(sqrt(2)) / 2.0f };
+    EXPECT_LT(abs(a.x - b.x) , epsilon);
+    EXPECT_LT(abs(a.y - b.y) , epsilon);
+    EXPECT_LT(abs(a.z - b.z) , epsilon);
 
     Point p1 = full_quarter * p;
     EXPECT_LT(abs(p1.x), epsilon);
@@ -820,7 +840,8 @@ TEST(Ray, transform)
 TEST(Sphere, transform)
 {
     Sphere s;
-    EXPECT_EQ((s.transform == Matrix::identity()), true);
+    Matrix m_i = Matrix::identity();
+    EXPECT_EQ((s.transform == m_i), true);
 
     Matrix m = Matrix::identity().translate(2, 3, 4);
     s.transform = m;

@@ -60,7 +60,7 @@ public:
 		return newRay;
 	}
 
-	std::vector<Intersection> intersects(Sphere& const s)
+	std::vector<Intersection> intersects(Sphere& s)
 	{
 		std::vector<Intersection> r;
 		Vector sphere_to_ray = orig - s.origin;

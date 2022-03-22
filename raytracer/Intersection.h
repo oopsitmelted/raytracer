@@ -5,8 +5,8 @@ class Intersection
 {
 public:
 	float t;
-	Shape& const object;
-	Intersection(float t, Shape& const object) : t(t), object(object) {};
+	Shape& object;
+	Intersection(float t, Shape& object) : t(t), object(object) {};
 	Intersection(const Intersection& i) : t(i.t), object(i.object) {};
 
 	Intersection& operator=(Intersection i)
