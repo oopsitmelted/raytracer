@@ -5,6 +5,8 @@
 #include "Canvas.h"
 #include "Matrix.h"
 #include "consts.h"
+#include "Ray.h"
+#include "Intersections.h"
 
 struct Projectile
 {
@@ -25,11 +27,10 @@ Projectile tick(Environment &env, Projectile &proj)
     return Projectile{ pos, vel };
 }
 
-int main()
-{   
+void renderClock()
+{
     std::ofstream file;
 
-#if 1
     file.open("clock.ppm");
     Canvas c{ 100, 100 };
     Color col{ 1, 0, 0 };
@@ -46,9 +47,11 @@ int main()
 
     file << c;
     file.close();
-#endif
+}
 
-# if 0
+void renderProjectile()
+{
+    std::ofstream file;
     file.open("projectile.ppm");
 
     Canvas c{ 900, 550 };
@@ -69,5 +72,51 @@ int main()
     }
     file << c;
     file.close();
-#endif
+}
+
+void renderSphere2D()
+{
+    std::ofstream file;
+    file.open("sphere2D.ppm");
+
+    constexpr int canvas_size = 100;
+    constexpr int wall_size = 7;
+    constexpr float wall_z = 10;
+    Point ray_origin = Point{0, 0, -5};
+
+    float pixel_size = (float)wall_size / (float)canvas_size;
+    float half = (float)wall_size / 2;
+
+    Canvas c{canvas_size, canvas_size};
+    Color color{ 1.0f, 0.0f, 0.0f };
+    Sphere s;
+
+    for (int y = 0; y < canvas_size; y++)
+    {
+        float world_y = half - pixel_size * y;
+
+        for (int x = 0; x < canvas_size; x++)
+        {
+            float world_x = -half + pixel_size * x;
+            Point pos = Point{world_x, world_y, wall_z};
+            Ray r = Ray{ray_origin, (pos - ray_origin).norm()};
+
+            std::vector<Intersection> xs = r.intersects(s);
+
+            if (Intersections{xs}.hit())
+            {
+                c.write_pixel(x, y, color);
+            }
+        }
+    }
+
+    file << c;
+    file.close();
+}
+
+int main()
+{   
+    renderClock();
+    renderProjectile();
+    renderSphere2D();
 }

@@ -11,6 +11,11 @@ public:
 		return Vector(x + obj.x, y + obj.y, z + obj.z);
 	}
 
+	Vector operator-(Vector obj)
+	{
+		return Vector(x - obj.x, y - obj.y, z - obj.z);
+	}
+
 	Vector operator*(float i)
 	{
 		return Vector(x * i, y * i, z * i);

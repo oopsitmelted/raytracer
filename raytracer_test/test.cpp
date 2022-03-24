@@ -12,6 +12,7 @@
 #include "../raytracer/Ray.h"
 #include "../raytracer/Sphere.h"
 #include "../raytracer/Intersection.h"
+#include "../raytracer/Intersections.h"
 
 constexpr float epsilon = 0.00001f;
 
@@ -795,21 +796,24 @@ TEST(Ray, hit)
     Intersection i1{ 1,s };
     Intersection i2{ 2,s };
     std::vector<Intersection> xs = {i1 ,i2};
-    std::optional<Intersection> hit = Ray::hit(xs);
+    Intersections is{xs};
+    std::optional<Intersection> hit = is.hit();
     EXPECT_EQ((hit ? true : false), true);
     EXPECT_EQ((*hit == i1), true);
 
     i1 = Intersection{ -1, s };
     i2 = Intersection{ 1, s };
     xs = { i1 ,i2 };
-    hit = Ray::hit(xs);
+    is = Intersections{xs};
+    hit = is.hit();
     EXPECT_EQ((hit ? true : false), true);
     EXPECT_EQ((*hit == i2), true);
 
     i1 = Intersection{ -2, s };
     i2 = Intersection{ -1, s };
     xs = { i1 ,i2 };
-    hit = Ray::hit(xs);
+    is = Intersections{xs};
+    hit = is.hit();
     EXPECT_EQ((hit ? true : false), false);
 
     i1 = Intersection{ 5, s };
@@ -817,7 +821,8 @@ TEST(Ray, hit)
     Intersection i3{ -3, s };
     Intersection i4{ 2, s };
     xs = { i1 ,i2, i3, i4 };
-    hit = Ray::hit(xs);
+    is = Intersections{xs};
+    hit = is.hit();
     EXPECT_EQ((hit ? true : false), true);
     EXPECT_EQ((*hit == i4), true);
 }
@@ -827,12 +832,12 @@ TEST(Ray, transform)
     Ray r{ Point{1, 2, 3}, Vector{0, 1, 0} };
     Matrix m = Matrix::identity().translate(3, 4, 5);
 
-    Ray r2 = r.tranform(m);
+    Ray r2 = r.transform(m);
     EXPECT_EQ((r2.dir == Vector{ 0, 1, 0 }), true);
     EXPECT_EQ((r2.orig == Point{ 4, 6, 8 }), true);
 
     m = Matrix::identity().scale(2, 3, 4);
-    r2 = r.tranform(m);
+    r2 = r.transform(m);
     EXPECT_EQ((r2.dir == Vector{ 0, 3, 0 }), true);
     EXPECT_EQ((r2.orig == Point{ 2, 6, 12 }), true);
 }
@@ -846,4 +851,19 @@ TEST(Sphere, transform)
     Matrix m = Matrix::identity().translate(2, 3, 4);
     s.transform = m;
     EXPECT_EQ((s.transform == m), true);
+}
+
+TEST(Sphere, translated_sphere_with_ray)
+{
+    Sphere s;
+    Ray r{Point{0, 0, -5}, Vector{0, 0, 1}};
+    s.transform = Matrix::identity().scale(2, 2, 2);
+    std::vector<Intersection> xs = r.intersects(s);
+    EXPECT_EQ(xs.size(), 2);
+    EXPECT_FLOAT_EQ(xs[0].t, 3);
+    EXPECT_FLOAT_EQ(xs[1].t, 7);
+
+    s.transform = Matrix::identity().translate(5, 0, 0);
+    xs = r.intersects(s);
+    EXPECT_EQ(xs.size(), 0);
 }
