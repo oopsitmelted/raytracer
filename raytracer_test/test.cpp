@@ -867,3 +867,52 @@ TEST(Sphere, translated_sphere_with_ray)
     xs = r.intersects(s);
     EXPECT_EQ(xs.size(), 0);
 }
+
+TEST(Sphere, normals)
+{
+    Sphere s;
+    Vector n = s.normal_at(Point{1, 0, 0});
+    EXPECT_EQ(n.x, 1);
+    EXPECT_EQ(n.y, 0);
+    EXPECT_EQ(n.z, 0);
+
+    n = s.normal_at(Point{0, 1, 0});
+    EXPECT_EQ(n.x, 0);
+    EXPECT_EQ(n.y, 1);
+    EXPECT_EQ(n.z, 0);
+
+    n = s.normal_at(Point{0, 0, 1});
+    EXPECT_EQ(n.x, 0);
+    EXPECT_EQ(n.y, 0);
+    EXPECT_EQ(n.z, 1);
+
+    n = s.normal_at(Point{(float)(sqrt(3)/3), (float)(sqrt(3)/3), (float)(sqrt(3)/3)});
+    EXPECT_FLOAT_EQ(n.x, sqrt(3)/3);
+    EXPECT_FLOAT_EQ(n.y, sqrt(3)/3);
+    EXPECT_FLOAT_EQ(n.z, sqrt(3)/3);
+
+    Vector nn = n.norm();
+    EXPECT_FLOAT_EQ(n.x, nn.x);
+    EXPECT_FLOAT_EQ(n.y, nn.y);
+    EXPECT_FLOAT_EQ(n.z, nn.z);
+}
+
+TEST(Sphere, norm_of_translated)
+{
+    Sphere s;
+    s.transform = Matrix::identity().translate(0, 1, 0);
+    Vector n = s.normal_at(Point{0, 1.70711, -0.70711});
+    EXPECT_LT(n.x - 0, epsilon);
+    EXPECT_LT(n.y - 0.70711, epsilon);
+    EXPECT_LT(n.z - -0.70711, epsilon);
+}
+
+TEST(Sphere, norm_of_transformed)
+{
+    Sphere s;
+    s.transform = Matrix::identity().scale(1, 0.5, 1).rotate_z(PI/5);
+    Vector n = s.normal_at(Point{0, (float)(sqrt(2)/2), (float)(-sqrt(2)/2)});
+    EXPECT_LT(n.x - 0, epsilon);
+    EXPECT_LT(n.y - 0.97014, epsilon);
+    EXPECT_LT(n.z - -0.24254, epsilon);
+}
