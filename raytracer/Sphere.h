@@ -2,6 +2,7 @@
 #include "Point.h"
 #include "Shape.h"
 #include "Matrix.h"
+#include "Material.h"
 
 class Sphere : public Shape
 {
@@ -9,8 +10,9 @@ public:
 	Matrix transform;
 	Point origin;
 	float radius;
+	Material material;
 
-	Sphere() : origin(0, 0, 0), radius(1), transform(Matrix::identity()) {};
+	Sphere() : origin(0, 0, 0), radius(1), transform(Matrix::identity()), material(Material{}) {};
 
 	Vector normal_at(Point world_point)
 	{

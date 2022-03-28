@@ -26,6 +26,7 @@ set(common_source
   raytracer/Sphere.cpp
   raytracer/Tuple.cpp
   raytracer/Vector.cpp
+  raytracer/PointLight.cpp
 )
 
 add_executable(

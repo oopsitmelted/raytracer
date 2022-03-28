@@ -7,6 +7,8 @@
 #include "consts.h"
 #include "Ray.h"
 #include "Intersections.h"
+#include "Lighting.h"
+#include "Material.h"
 
 struct Projectile
 {
@@ -114,9 +116,59 @@ void renderSphere2D()
     file.close();
 }
 
+void renderSphere3D()
+{
+
+    std::ofstream file;
+    file.open("sphere3D.ppm");
+
+    constexpr int canvas_size = 100;
+    constexpr int wall_size = 7;
+    constexpr float wall_z = 10;
+    Point ray_origin = Point{0, 0, -5};
+
+    float pixel_size = (float)wall_size / (float)canvas_size;
+    float half = (float)wall_size / 2;
+
+    Canvas c{canvas_size, canvas_size};
+    Sphere s;
+    s.material.color = Color{1, 0.2, 1};
+    Point light_position = Point{-10, 10, -10};
+    Color light_color = Color{1, 1, 1};
+    PointLight light = PointLight{light_color, light_position};
+
+    for (int y = 0; y < canvas_size; y++)
+    {
+        float world_y = half - pixel_size * y;
+
+        for (int x = 0; x < canvas_size; x++)
+        {
+            float world_x = -half + pixel_size * x;
+            Point pos = Point{world_x, world_y, wall_z};
+            Ray r = Ray{ray_origin, (pos - ray_origin).norm()};
+
+            std::vector<Intersection> xs = r.intersects(s);
+
+            std::optional<Intersection> hit = Intersections{xs}.hit();
+            if (hit)
+            {
+                Point point = r.position(hit->t);
+                Vector normal = s.normal_at(point);
+                Vector eye = Vector{0,0,0} - r.dir;
+                Color color = Lighting::lighting(s.material, light, point, eye, normal);
+                c.write_pixel(x, y, color);
+            }
+        }
+    }
+
+    file << c;
+    file.close();
+}
+
 int main()
 {   
     renderClock();
     renderProjectile();
     renderSphere2D();
+    renderSphere3D();
 }

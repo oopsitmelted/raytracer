@@ -13,6 +13,9 @@
 #include "../raytracer/Sphere.h"
 #include "../raytracer/Intersection.h"
 #include "../raytracer/Intersections.h"
+#include "../raytracer/Material.h"
+#include "../raytracer/PointLight.h"
+#include "../raytracer/Lighting.h"
 
 constexpr float epsilon = 0.00001f;
 
@@ -161,6 +164,24 @@ TEST(Vector, cross)
     EXPECT_FLOAT_EQ(v3.x, 1.0f);
     EXPECT_FLOAT_EQ(v3.y, -2.0f);
     EXPECT_FLOAT_EQ(v3.z, 1.0f);
+}
+
+TEST(Vector, reflect)
+{
+    Vector v = Vector{1, -1, 0};
+    Vector n = Vector{0, 1, 0};
+    Vector r = v.reflect(n);
+    EXPECT_EQ(r.x, 1);
+    EXPECT_EQ(r.y, 1);
+    EXPECT_EQ(r.z, 0);
+
+    // slanted surface
+    v = Vector{0, -1, 0};
+    n = Vector{(float)(sqrt(2)/2), (float)(sqrt(2)/2), 0};
+    r = v.reflect(n);
+    EXPECT_LT(r.x - 1, epsilon);
+    EXPECT_LT(r.y - 0, epsilon);
+    EXPECT_LT(r.z - 0, epsilon);
 }
 
 TEST(Color, constructor)
@@ -915,4 +936,106 @@ TEST(Sphere, norm_of_transformed)
     EXPECT_LT(n.x - 0, epsilon);
     EXPECT_LT(n.y - 0.97014, epsilon);
     EXPECT_LT(n.z - -0.24254, epsilon);
+}
+
+TEST(Sphere, material)
+{
+    Sphere s;
+    Material m1 = s.material;
+    Material m2;
+
+    EXPECT_FLOAT_EQ(m1.ambient, m2.ambient);
+    EXPECT_FLOAT_EQ(m1.diffuse, m2.diffuse);
+    EXPECT_FLOAT_EQ(m1.shininess, m2.shininess);
+    EXPECT_FLOAT_EQ(m1.color.red, m2.color.red);
+    EXPECT_FLOAT_EQ(m1.color.green, m2.color.green);
+    EXPECT_FLOAT_EQ(m1.color.blue, m2.color.blue);
+
+    // s can be assigned a material
+    m2.ambient = 1;
+    s.material = m2;
+    EXPECT_FLOAT_EQ(s.material.ambient, 1);
+}
+
+TEST(Material, default)
+{
+    Material m;
+    
+    EXPECT_EQ(m.color.red, 1);
+    EXPECT_EQ(m.color.green, 1);
+    EXPECT_EQ(m.color.blue, 1);
+    EXPECT_FLOAT_EQ(m.ambient, 0.1);
+    EXPECT_FLOAT_EQ(m.diffuse, 0.9);
+    EXPECT_FLOAT_EQ(m.specular, 0.9);
+    EXPECT_FLOAT_EQ(m.shininess, 200.0);
+}
+
+TEST(Lighting, light_eye_surface)
+{
+    Material m;
+    Point position {0, 0, 0};
+    Vector eyev = Vector {0, 0, -1};
+    Vector normalv = Vector {0, 0, -1};
+    PointLight light = PointLight {Color{1, 1, 1}, Point{0, 0, -10}};
+
+    Color result = Lighting::lighting(m, light, position, eyev, normalv);
+    EXPECT_FLOAT_EQ(result.red, 1.9);
+    EXPECT_FLOAT_EQ(result.green, 1.9);
+    EXPECT_FLOAT_EQ(result.blue, 1.9);
+}
+
+TEST(Lighting, light_eye_surface_eye_45_degree)
+{
+    Material m;
+    Point position {0, 0, 0};
+    Vector eyev = Vector {0, ((float)sqrt(2))/2, -((float)sqrt(2))/2}; 
+    Vector normalv = Vector {0, 0, -1};
+    PointLight light = PointLight {Color{1, 1, 1}, Point{0, 0, -10}};
+
+    Color result = Lighting::lighting(m, light, position, eyev, normalv);
+    EXPECT_FLOAT_EQ(result.red, 1.0);
+    EXPECT_FLOAT_EQ(result.green, 1.0);
+    EXPECT_FLOAT_EQ(result.blue, 1.0);
+}
+
+TEST(Lighting, light_eye_opposite_surface_light_45_degree)
+{
+    Material m;
+    Point position {0, 0, 0};
+    Vector eyev = Vector {0, 0, -1}; 
+    Vector normalv = Vector {0, 0, -1};
+    PointLight light = PointLight {Color{1, 1, 1}, Point{0, 10, -10}};
+
+    Color result = Lighting::lighting(m, light, position, eyev, normalv);
+    EXPECT_LT(result.red - 0.7364, epsilon);
+    EXPECT_LT(result.green - 0.7364, epsilon);
+    EXPECT_LT(result.blue - 0.7364, epsilon);
+}
+
+TEST(Lighting, light_eye_in_path_of_reflection_vector)
+{
+    Material m;
+    Point position {0, 0, 0};
+    Vector eyev = Vector {0, ((float)sqrt(2))/2, -((float)sqrt(2))/2}; 
+    Vector normalv = Vector {0, 0, -1};
+    PointLight light = PointLight {Color{1, 1, 1}, Point{0, 10, -10}};
+
+    Color result = Lighting::lighting(m, light, position, eyev, normalv);
+    EXPECT_LT(result.red - 1.6364, epsilon);
+    EXPECT_LT(result.green - 1.6364, epsilon);
+    EXPECT_LT(result.blue - 1.6364, epsilon);
+}
+
+TEST(Lighting, light_behind_surface)
+{
+    Material m;
+    Point position {0, 0, 0};
+    Vector eyev = Vector {0, 0, -1}; 
+    Vector normalv = Vector {0, 0, -1};
+    PointLight light = PointLight {Color{1, 1, 1}, Point{0, 0, 10}};
+
+    Color result = Lighting::lighting(m, light, position, eyev, normalv);
+    EXPECT_LT(result.red - 0.1, epsilon);
+    EXPECT_LT(result.green - 0.1, epsilon);
+    EXPECT_LT(result.blue - 0.1, epsilon);
 }

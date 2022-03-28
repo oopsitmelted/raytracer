@@ -36,5 +36,10 @@ public:
 		float mag = this->mag();
 		return Vector(x / mag, y / mag, z / mag);
 	}
+
+	Vector reflect(Vector normal)
+	{
+		return *this - normal * 2 * this->dot(normal);
+	}
 };
 
