@@ -308,13 +308,13 @@ TEST(Canvas, serializelonglines)
 
 TEST(Matrix, constructor)
 {
-    TWO_D_ARRAY d{ \
+    float d[4][4] =  {
         {1, 2, 3, 4}, \
         {5.5, 6.5, 7.5, 8.5}, \
         {9, 10, 11, 12}, \
         {13.5, 14.5, 15.5, 16.5} };
 
-    Matrix m{ d };
+    Matrix<4,4> m{ d };
 
     EXPECT_FLOAT_EQ(m.get(0, 0), 1);
     EXPECT_FLOAT_EQ(m.get(0, 3), 4);
@@ -325,68 +325,71 @@ TEST(Matrix, constructor)
     EXPECT_FLOAT_EQ(m.get(3, 2), 15.5);
 
 
-    d = { {-3, 5}, {1, -2} };
-    m = Matrix{ d };
+    float d2[2][2] = { {-3, 5}, {1, -2} };
+    Matrix<2,2> m2 = d2;
 
-    EXPECT_FLOAT_EQ(m.get(0, 0), -3);
-    EXPECT_FLOAT_EQ(m.get(0, 1), 5);
-    EXPECT_FLOAT_EQ(m.get(1, 0), 1);
-    EXPECT_FLOAT_EQ(m.get(1, 1), -2);
+    EXPECT_FLOAT_EQ(m2.get(0, 0), -3);
+    EXPECT_FLOAT_EQ(m2.get(0, 1), 5);
+    EXPECT_FLOAT_EQ(m2.get(1, 0), 1);
+    EXPECT_FLOAT_EQ(m2.get(1, 1), -2);
 }
 
 TEST(Matrix, equality)
 {
-    TWO_D_ARRAY d = {
+    float d[4][4] = {
         {1, 2, 3, 4}, \
         {5, 6, 7, 8}, \
         {9, 10, 11, 12}, \
         {13, 14, 15, 16} };
 
-    TWO_D_ARRAY e = {
+    float e[4][4] = {
         {1, 2, 3, 4}, \
         {5, 6, 7, 8}, \
         {9, 10, 11, 12}, \
         {13, 14, 15, 16} };
 
-    EXPECT_EQ(d == e, true);
+    Matrix m_d = Matrix<4,4>{d};
+    Matrix m_e = Matrix<4,4>{e};
 
-    e = {
+    EXPECT_EQ(m_d == m_e, true);
+
+    float e2[4][4] = {
         {2, 3, 4, 5}, \
         {6, 7, 8, 9}, \
         {8 ,7, 6, 5}, \
         {4, 3, 2, 1} };
 
-    EXPECT_EQ(d != e, true);
+    EXPECT_EQ(d != e2, true);
 }
 
 TEST(Matrix, multiply)
 {
-    TWO_D_ARRAY d {
+    float d[4][4] {
     {1, 2, 3, 4}, \
     {5, 6, 7, 8}, \
     {9, 8, 7, 6}, \
     {5, 4, 3, 2} };
 
-    TWO_D_ARRAY e {
+    float e[4][4] {
     {-2, 1, 2, 3}, \
     {3, 2, 1, -1}, \
     {4, 3, 6, 5}, \
     {1, 2, 7, 8} };
 
-    Matrix m_d = Matrix{d};
-    Matrix m_e = Matrix{e};
+    Matrix m_d = Matrix<4,4>{d};
+    Matrix m_e = Matrix<4,4>{e};
     Matrix m = m_d * m_e;
 
-    TWO_D_ARRAY prod{
+    float prod[4][4]{
     {20, 22, 50, 48}, \
     {44, 54, 114, 108}, \
     {40, 58, 110, 102}, \
     {16, 26, 46, 42} };
 
-    Matrix p = Matrix{prod};
+    Matrix p = Matrix<4,4>{prod};
     EXPECT_EQ(m == p, true);
 
-    d = {
+    float d2[4][4] = {
     {1, 2, 3, 4}, \
     {2, 4, 4, 2}, \
     {8, 6, 4, 1}, \
@@ -394,145 +397,155 @@ TEST(Matrix, multiply)
 
     Tuple t{ 1, 2, 3, 1 };
 
-    t = Matrix{ d } * t;
+    t = Matrix<4,4>{ d2 } * t;
 
     EXPECT_EQ(t == Tuple(18, 24, 33, 1), true);
 }
 
 TEST(Matrix, identity)
 {
-    TWO_D_ARRAY d{
+    float d[4][4]{
     {0, 1, 2, 4}, \
     {1, 2, 4, 8}, \
     {2, 4, 8, 16}, \
     {4, 8, 16, 32} };
 
-    Matrix m_d = Matrix{ d };
-    Matrix m_i = Matrix::identity();
+    Matrix m_d = Matrix<4,4>{ d };
+    Matrix m_i = Matrix<4,4>::identity();
     Matrix m = m_d * m_i;
 
-    EXPECT_EQ(Matrix{ d } == m, true);
+    Matrix m2 = Matrix<4,4>{ d };
+    EXPECT_EQ(m == m2, true);
 }
 
 TEST(Matrix, transpose)
 {
-    TWO_D_ARRAY d{
+    float d[4][4]{
     {0, 9, 3, 0}, \
     {9, 8, 0, 8}, \
     {1, 8, 5, 3}, \
     {0, 0, 5, 8} };
 
-    TWO_D_ARRAY e{
+    float e[4][4]{
     {0, 9, 1, 0}, \
     {9, 8, 8, 0}, \
     {3, 0, 5, 5}, \
     {0, 8, 3, 8} };
 
-    Matrix m_d = Matrix{ d };
-    Matrix m_e = Matrix{ e };
+    Matrix m_d = Matrix<4,4>{ d };
+    Matrix m_e = Matrix<4,4>{ e };
     EXPECT_EQ(m_d.transpose() == m_e, true);
 
-    Matrix m_i = Matrix::identity();
+    Matrix m_i = Matrix<4,4>::identity();
     Matrix m_it = m_i.transpose();
     EXPECT_EQ( m_i == m_it, true);
 }
 
 TEST(Matrix, determinant)
 {
-    TWO_D_ARRAY d{
+    float d[2][2]{
         {1, 5}, \
         {-3, 2} };
 
-    EXPECT_FLOAT_EQ(Matrix{ d }.determinant(), 17);
+    float det = Matrix<2,2>{ d }.determinant();
+    EXPECT_FLOAT_EQ(det, 17);
 }
 
 TEST(Matrix, submatrix)
 {
-    TWO_D_ARRAY d{
+    float d[3][3]{
         {1, 5, 0}, \
         {-3, 2, 7}, \
         {0, 6, -3} };
 
-    TWO_D_ARRAY e{
+    float e[2][2]{
         {-3, 2}, \
         {0, 6} };
 
-    Matrix m_d_sub = Matrix{ d }.submatrix(0, 2);
-    Matrix m_e = Matrix{ e };
+    Matrix m_d_sub = Matrix<3,3>{ d }.submatrix(0, 2);
+    Matrix m_e = Matrix<2,2>{ e };
     EXPECT_EQ( m_d_sub == m_e, true);
 
-    d = {
+    float d2[4][4] = {
         {-6, 1, 1, 6}, \
         {-8, 5, 8, 6}, \
         {-1, 0, 8, 2}, \
         {-7, 1, -1, 1} };
 
-    e = {
+    float e2[3][3] = {
         {-6, 1, 6}, \
         {-8, 8, 6}, \
         {-7, -1, 1} };
 
-    m_d_sub = Matrix{ d }.submatrix(2, 1);
-    m_e = Matrix{ e };
-    EXPECT_EQ( m_d_sub == m_e, true);
+    Matrix m_d_sub2 = Matrix<4,4>{ d2 }.submatrix(2, 1);
+    Matrix m_e2 = Matrix<3,3>{ e2 };
+    EXPECT_EQ( m_d_sub2 == m_e2, true);
 }
 
 TEST(Matrix, minor)
 {
-    TWO_D_ARRAY d{
+    float d[3][3]{
         {3, 5, 0}, \
         {2, -1, -7}, \
         {6, -1, 5} };
 
-    EXPECT_FLOAT_EQ(Matrix{ d }.minor(1, 0), 25);
-    EXPECT_FLOAT_EQ(Matrix{ d }.minor(0, 0), -12);
-    EXPECT_FLOAT_EQ(Matrix{ d }.cofactor(0, 0), -12);
-    EXPECT_FLOAT_EQ(Matrix{ d }.minor(1, 0), 25);
-    EXPECT_FLOAT_EQ(Matrix{ d }.cofactor(1, 0), -25);
+    Matrix m = Matrix<3,3>{ d };
+
+    EXPECT_FLOAT_EQ(m.minor(1,0), 25);
+    EXPECT_FLOAT_EQ(m.minor(0,0), -12);
+    EXPECT_FLOAT_EQ(m.cofactor(0, 0), -12);
+    EXPECT_FLOAT_EQ(m.minor(1, 0), 25);
+    EXPECT_FLOAT_EQ(m.cofactor(1, 0), -25);
 }
 
 TEST(Matrix, largedeterminant)
 {
-    TWO_D_ARRAY d{
+    float d[3][3]{
         {1, 2, 6}, \
         {-5, 8, -4}, \
         {2, 6, 4} };
 
-    EXPECT_FLOAT_EQ(Matrix{ d }.cofactor(0, 0), 56);
-    EXPECT_FLOAT_EQ(Matrix{ d }.cofactor(0, 1), 12);
-    EXPECT_FLOAT_EQ(Matrix{ d }.cofactor(0, 2), -46);
-    EXPECT_FLOAT_EQ(Matrix{ d }.determinant(), -196);
+    Matrix m = Matrix<3,3>{d};
 
-    d = {
+    EXPECT_FLOAT_EQ(m.cofactor(0, 0), 56);
+    EXPECT_FLOAT_EQ(m.cofactor(0, 1), 12);
+    EXPECT_FLOAT_EQ(m.cofactor(0, 2), -46);
+    EXPECT_FLOAT_EQ(m.determinant(), -196);
+
+    float d2[4][4] = {
         {-2, -8, 3, 5}, \
         {-3, 1, 7, 3}, \
         {1, 2, -9, 6}, \
         {-6, 7, 7, -9} };
 
-    EXPECT_FLOAT_EQ(Matrix{ d }.cofactor(0, 0), 690);
-    EXPECT_FLOAT_EQ(Matrix{ d }.cofactor(0, 1), 447);
-    EXPECT_FLOAT_EQ(Matrix{ d }.cofactor(0, 2), 210);
-    EXPECT_FLOAT_EQ(Matrix{ d }.cofactor(0, 3), 51);
-    EXPECT_FLOAT_EQ(Matrix{ d }.determinant(), -4071);
+    Matrix m2 = Matrix<4,4>{d2};
+
+    EXPECT_FLOAT_EQ(m2.cofactor(0, 0), 690);
+    EXPECT_FLOAT_EQ(m2.cofactor(0, 1), 447);
+    EXPECT_FLOAT_EQ(m2.cofactor(0, 2), 210);
+    EXPECT_FLOAT_EQ(m2.cofactor(0, 3), 51);
+    EXPECT_FLOAT_EQ(m2.determinant(), -4071);
 }
 
 TEST(Matrix, invertible)
 {
-    TWO_D_ARRAY d{
+    float d[4][4]{
         {6, 4, 4, 4}, \
         {5, 5, 7, 6}, \
         {4, -9, 3, -7}, \
         {9, 1, 7, -6} };
 
-    EXPECT_FLOAT_EQ(Matrix{ d }.determinant(), -2120);
+    Matrix m = Matrix<4,4>{ d };
+    EXPECT_FLOAT_EQ(m.determinant(), -2120);
 
-    d = {
+    float d2[4][4] = {
         {-4, 2, -2, -3}, \
         {9, 6, 2, 6}, \
         {0, -5, 1, -5}, \
         {0, 0, 0, 0} };
 
-    EXPECT_FLOAT_EQ(Matrix{ d }.determinant(), 0);
+    Matrix m2 = Matrix<4,4>{ d2 };
+    EXPECT_FLOAT_EQ(m2.determinant(), 0);
 }
 
 static float round_num(float f, int places)
@@ -543,19 +556,19 @@ static float round_num(float f, int places)
 }
 TEST(Matrix, inverse)
 {
-    TWO_D_ARRAY d{
+    float d[4][4]{
         {8, -5, 9, 2}, \
         {7, 5, 6, 1}, \
         {-6, 0, 9, 6}, \
         {-3, 0, -9, -4} };
 
-    TWO_D_ARRAY inv{
+    float inv[4][4]{
         {-0.15385, -0.15385, -0.28205, -0.53846}, \
         {-0.07692, 0.12308, 0.02564, 0.03077}, \
         {0.35897, 0.35897, 0.43590, 0.92308}, \
         {-0.69231, -0.69231, -0.76923, -1.92308} };
 
-    Matrix d_inv = Matrix{ d }.inverse();
+    Matrix d_inv = Matrix<4,4>{ d }.inverse();
 
     for (int r = 0; r < 4; r++)
         for (int c = 0; c < 4; c++)
@@ -563,19 +576,19 @@ TEST(Matrix, inverse)
             EXPECT_FLOAT_EQ(inv[r][c], round_num(d_inv.get(r,c), 5));
         }
 
-    d = {
+    float d2[4][4] = {
         {9, 3, 0, 9}, \
         {-5, -2, -6, -3}, \
         {-4, 9, 6, 4}, \
         {-7, 6, 6, 2} };
 
-    inv = {
+    float inv2[4][4] = {
         {-0.04074, -0.07778, 0.14444, -0.22222}, \
         {-0.07778, 0.03333, 0.36667, -0.33333}, \
         {-0.02901, -0.14630, -0.10926, 0.12963}, \
         {0.17778, 0.06667, -0.26667, 0.33333} };
 
-    d_inv = Matrix{ d }.inverse();
+    d_inv = Matrix<4,4>{ d }.inverse();
 
     for (int r = 0; r < 4; r++)
         for (int c = 0; c < 4; c++)
@@ -583,22 +596,22 @@ TEST(Matrix, inverse)
             EXPECT_FLOAT_EQ(inv[r][c], round_num(d_inv.get(r, c), 5));
         }
 
-    TWO_D_ARRAY a{
+    float a[4][4]{
         {3, -9, 7, 3}, \
         {3, -8, 2, -9}, \
         {-4, 4, 4, 1}, \
         {-6, 5, -1, 1} };
 
-    TWO_D_ARRAY b{
+    float b[4][4]{
         {8, 2, 2, 2}, \
         {3, -1, 7, 0}, \
         {7, 0, 5, 4}, \
         {6, -2, 0, 5} };
 
-    Matrix m_a = Matrix{ a };
-    Matrix m_b = Matrix{ b };
+    Matrix m_a = Matrix<4,4>{ a };
+    Matrix m_b = Matrix<4,4>{ b };
     Matrix c = m_a * m_b;
-    Matrix m_b_inv = Matrix{ b }.inverse();
+    Matrix m_b_inv = Matrix<4,4>{ b }.inverse();
     Matrix c_times_inv_b = c * m_b_inv;
 
     for (int r = 0; r < 4; r++)
@@ -610,7 +623,7 @@ TEST(Matrix, inverse)
 
 TEST(Matrix, translate)
 {
-    Matrix t = Matrix::identity().translate(5, -3, 2);
+    Matrix t = Matrix<4,4>::identity().translate(5, -3, 2);
     Point p{ -3, 4, 5 };
 
     EXPECT_EQ(((t * p) == Point{ 2, 1, 7 }), true);
@@ -625,7 +638,7 @@ TEST(Matrix, translate)
 
 TEST(Matrix, scale)
 {
-    Matrix t = Matrix::identity().scale(2, 3, 4);
+    Matrix t = Matrix<4,4>::identity().scale(2, 3, 4);
     Point p{ -4, 6, 8 };
 
     EXPECT_EQ(((t * p) == Point{ -8, 18, 32 }), true);
@@ -636,15 +649,15 @@ TEST(Matrix, scale)
     EXPECT_EQ(((t.inverse() * v) == Vector{ -2, 2, 2 }), true);
 
     p = { 2, 3, 4 };
-    t = Matrix::identity().scale(-1, 1, 1);
+    t = Matrix<4,4>::identity().scale(-1, 1, 1);
     EXPECT_EQ(((t * p) == Point{ -2, 3, 4 }), true);
 }
 
 TEST(Matrix, rotation_x)
 {
     Point p{ 0, 1, 0 };
-    Matrix half_quarter = Matrix::identity().rotate_x(PI / 4);
-    Matrix full_quarter = Matrix::identity().rotate_x(PI / 2);
+    Matrix half_quarter = Matrix<4,4>::identity().rotate_x(PI / 4);
+    Matrix full_quarter = Matrix<4,4>::identity().rotate_x(PI / 2);
 
     Point a = half_quarter * p;
     Point b = Point{ 0, static_cast<float>(sqrt(2)) / 2.0f, 
@@ -668,8 +681,8 @@ TEST(Matrix, rotation_x)
 TEST(Matrix, rotation_y)
 {
     Point p{ 0, 0, 1 };
-    Matrix half_quarter = Matrix::identity().rotate_y(PI / 4);
-    Matrix full_quarter = Matrix::identity().rotate_y(PI / 2);
+    Matrix half_quarter = Matrix<4,4>::identity().rotate_y(PI / 4);
+    Matrix full_quarter = Matrix<4,4>::identity().rotate_y(PI / 2);
 
     Point p1 = half_quarter * p;
     EXPECT_LT(abs(p1.x - sqrt(2)/2), epsilon);
@@ -685,8 +698,8 @@ TEST(Matrix, rotation_y)
 TEST(Matrix, rotation_z)
 {
     Point p{ 0, 1, 0 };
-    Matrix half_quarter = Matrix::identity().rotate_z(PI / 4);
-    Matrix full_quarter = Matrix::identity().rotate_z(PI / 2);
+    Matrix half_quarter = Matrix<4,4>::identity().rotate_z(PI / 4);
+    Matrix full_quarter = Matrix<4,4>::identity().rotate_z(PI / 2);
 
     Point p1 = half_quarter * p;
     EXPECT_LT(abs(p1.x + sqrt(2) / 2), epsilon);
@@ -701,36 +714,36 @@ TEST(Matrix, rotation_z)
 
 TEST(Matrix, shear)
 {
-    Matrix s = Matrix::identity().shear(1, 0, 0, 0, 0, 0);
+    Matrix s = Matrix<4,4>::identity().shear(1, 0, 0, 0, 0, 0);
     Point p{ 2, 3, 4 };
 
     Point p1 = s * p;
     EXPECT_EQ((p1 == Point{ 5, 3, 4 }), true);
 
-    s = Matrix::identity().shear(0, 1, 0, 0, 0, 0);
+    s = Matrix<4,4>::identity().shear(0, 1, 0, 0, 0, 0);
     p1 = s * p;
     EXPECT_EQ((p1 == Point{ 6, 3, 4 }), true);
 
-    s = Matrix::identity().shear(0, 0, 1, 0, 0, 0);
+    s = Matrix<4,4>::identity().shear(0, 0, 1, 0, 0, 0);
     p1 = s * p;
     EXPECT_EQ((p1 == Point{ 2, 5, 4 }), true);
 
-    s = Matrix::identity().shear(0, 0, 0, 1, 0, 0);
+    s = Matrix<4,4>::identity().shear(0, 0, 0, 1, 0, 0);
     p1 = s * p;
     EXPECT_EQ((p1 == Point{ 2, 7, 4 }), true);
 
-    s = Matrix::identity().shear(0, 0, 0, 0, 1, 0);
+    s = Matrix<4,4>::identity().shear(0, 0, 0, 0, 1, 0);
     p1 = s * p;
     EXPECT_EQ((p1 == Point{ 2, 3, 6 }), true);
 
-    s = Matrix::identity().shear(0, 0, 0, 0, 0, 1);
+    s = Matrix<4,4>::identity().shear(0, 0, 0, 0, 0, 1);
     p1 = s * p;
     EXPECT_EQ((p1 == Point{ 2, 3, 7 }), true);
 }
 
 TEST(Matrix, transformchain)
 {
-    Matrix t = Matrix::identity().rotate_x(PI / 2).scale(5, 5, 5).translate(10, 5, 7);
+    Matrix t = Matrix<4,4>::identity().rotate_x(PI / 2).scale(5, 5, 5).translate(10, 5, 7);
     Point p{ 1, 0, 1 };
 
     Point p1 = t * p;
@@ -851,13 +864,13 @@ TEST(Ray, hit)
 TEST(Ray, transform)
 {
     Ray r{ Point{1, 2, 3}, Vector{0, 1, 0} };
-    Matrix m = Matrix::identity().translate(3, 4, 5);
+    Matrix m = Matrix<4,4>::identity().translate(3, 4, 5);
 
     Ray r2 = r.transform(m);
     EXPECT_EQ((r2.dir == Vector{ 0, 1, 0 }), true);
     EXPECT_EQ((r2.orig == Point{ 4, 6, 8 }), true);
 
-    m = Matrix::identity().scale(2, 3, 4);
+    m = Matrix<4,4>::identity().scale(2, 3, 4);
     r2 = r.transform(m);
     EXPECT_EQ((r2.dir == Vector{ 0, 3, 0 }), true);
     EXPECT_EQ((r2.orig == Point{ 2, 6, 12 }), true);
@@ -866,10 +879,10 @@ TEST(Ray, transform)
 TEST(Sphere, transform)
 {
     Sphere s;
-    Matrix m_i = Matrix::identity();
+    Matrix m_i = Matrix<4,4>::identity();
     EXPECT_EQ((s.transform == m_i), true);
 
-    Matrix m = Matrix::identity().translate(2, 3, 4);
+    Matrix m = Matrix<4,4>::identity().translate(2, 3, 4);
     s.transform = m;
     EXPECT_EQ((s.transform == m), true);
 }
@@ -878,13 +891,13 @@ TEST(Sphere, translated_sphere_with_ray)
 {
     Sphere s;
     Ray r{Point{0, 0, -5}, Vector{0, 0, 1}};
-    s.transform = Matrix::identity().scale(2, 2, 2);
+    s.transform = Matrix<4,4>::identity().scale(2, 2, 2);
     std::vector<Intersection> xs = r.intersects(s);
     EXPECT_EQ(xs.size(), 2);
     EXPECT_FLOAT_EQ(xs[0].t, 3);
     EXPECT_FLOAT_EQ(xs[1].t, 7);
 
-    s.transform = Matrix::identity().translate(5, 0, 0);
+    s.transform = Matrix<4,4>::identity().translate(5, 0, 0);
     xs = r.intersects(s);
     EXPECT_EQ(xs.size(), 0);
 }
@@ -921,7 +934,7 @@ TEST(Sphere, normals)
 TEST(Sphere, norm_of_translated)
 {
     Sphere s;
-    s.transform = Matrix::identity().translate(0, 1, 0);
+    s.transform = Matrix<4,4>::identity().translate(0, 1, 0);
     Vector n = s.normal_at(Point{0, 1.70711, -0.70711});
     EXPECT_LT(n.x - 0, epsilon);
     EXPECT_LT(n.y - 0.70711, epsilon);
@@ -931,7 +944,7 @@ TEST(Sphere, norm_of_translated)
 TEST(Sphere, norm_of_transformed)
 {
     Sphere s;
-    s.transform = Matrix::identity().scale(1, 0.5, 1).rotate_z(PI/5);
+    s.transform = Matrix<4,4>::identity().scale(1, 0.5, 1).rotate_z(PI/5);
     Vector n = s.normal_at(Point{0, (float)(sqrt(2)/2), (float)(-sqrt(2)/2)});
     EXPECT_LT(n.x - 0, epsilon);
     EXPECT_LT(n.y - 0.97014, epsilon);

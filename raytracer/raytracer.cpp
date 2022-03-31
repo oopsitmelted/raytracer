@@ -39,11 +39,11 @@ void renderClock()
 
     Point p{0, 40, 0};
 
-    Matrix m = Matrix::identity();
+    Matrix m = Matrix<4,4>::identity();
 
     for (int i = 0; i < 12; i++)
     {
-        Point hour = Matrix::identity().rotate_z((i * PI) / 6) * p;
+        Point hour = Matrix<4,4>::identity().rotate_z((i * PI) / 6) * p;
         c.write_pixel(50 + hour.x, c.height - (50 + hour.y), col);
     }
 
@@ -122,7 +122,7 @@ void renderSphere3D()
     std::ofstream file;
     file.open("sphere3D.ppm");
 
-    constexpr int canvas_size = 100;
+    constexpr int canvas_size = 1000;
     constexpr int wall_size = 7;
     constexpr float wall_z = 10;
     Point ray_origin = Point{0, 0, -5};

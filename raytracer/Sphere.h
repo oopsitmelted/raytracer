@@ -7,12 +7,12 @@
 class Sphere : public Shape
 {
 public:
-	Matrix transform;
+	Matrix<4,4> transform;
 	Point origin;
 	float radius;
 	Material material;
 
-	Sphere() : origin(0, 0, 0), radius(1), transform(Matrix::identity()), material(Material{}) {};
+	Sphere() : origin(0, 0, 0), radius(1), transform(Matrix<4,4>::identity()), material(Material{}) {};
 
 	Vector normal_at(Point world_point)
 	{

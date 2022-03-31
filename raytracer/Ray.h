@@ -21,7 +21,7 @@ public:
 		return orig + (dir * t);
 	}
 
-	Ray transform(Matrix m)
+	Ray transform(Matrix<4,4> m)
 	{
 		Ray newRay = *this;
 		newRay.dir = m * dir;
