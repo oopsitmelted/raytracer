@@ -22,7 +22,7 @@ public:
 	const Material& Mat() const {return material;};
 
 	void Transform(Matrix<4,4> t){transform = t;};
-	void Mat(Material m){material = m;};
+	void Mat(Material m) {material = m;};
 
 	std::vector<Intersection> intersects(Ray& r)
 	{

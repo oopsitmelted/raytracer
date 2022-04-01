@@ -45,7 +45,7 @@ void renderClock()
     for (int i = 0; i < 12; i++)
     {
         Point hour = Matrix<4,4>::identity().rotate_z((i * PI) / 6) * p;
-        c.write_pixel(50 + hour.x, c.height - (50 + hour.y), col);
+        c.write_pixel(50 + hour.X(), c.height - (50 + hour.Y()), col);
     }
 
     file << c;
@@ -67,10 +67,10 @@ void renderProjectile()
     Vector wind{ -0.01f, 0.0f, 0.0f };
     Environment e{ gravity, wind };
 
-    while (p.pos.y > 0.0f)
+    while (p.pos.Y() > 0.0f)
     {
         //std::cout << "Y Pos: " << p.pos.y << '\n';
-        c.write_pixel(p.pos.x, c.height - p.pos.y - 1, color);
+        c.write_pixel(p.pos.X(), c.height - p.pos.Y() - 1, color);
         p = tick(e, p);
     }
     file << c;
@@ -133,7 +133,9 @@ void renderSphere3D()
 
     Canvas c{canvas_size, canvas_size};
     Sphere s;
-    s.material.color = Color{1, 0.2, 1};
+    Material mat = s.Mat();
+    mat.Col(Color{1, 0.2, 1});
+    s.Mat(mat);
     Point light_position = Point{-10, 10, -10};
     Color light_color = Color{1, 1, 1};
     PointLight light = PointLight{light_color, light_position};
@@ -156,7 +158,7 @@ void renderSphere3D()
                 Point point = r.position(hit->t);
                 Vector normal = s.normal_at(point);
                 Vector eye = Vector{0,0,0} - r.Dir();
-                Color color = Lighting::lighting(s.material, light, point, eye, normal);
+                Color color = Lighting::lighting(s.Mat(), light, point, eye, normal);
                 c.write_pixel(x, y, color);
             }
         }
