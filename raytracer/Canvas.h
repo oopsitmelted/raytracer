@@ -68,7 +68,7 @@ public:
 
 				Color color = c.pixel_at(x, y);
 				snprintf(c_line, sizeof(c_line), "%d %d %d ", 
-					c.scaleAndLimit(color.red), c.scaleAndLimit(color.green), c.scaleAndLimit(color.blue));
+					c.scaleAndLimit(color.Red()), c.scaleAndLimit(color.Green()), c.scaleAndLimit(color.Blue()));
 				line.append(c_line);
 			}
 			os << line << std::endl;

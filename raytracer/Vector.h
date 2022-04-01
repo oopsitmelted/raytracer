@@ -21,7 +21,7 @@ public:
 		return Vector(x * i, y * i, z * i);
 	}
 
-	float dot(Vector const obj)
+	float dot(Vector const obj) const
 	{
 		return (x * obj.x + y * obj.y + z * obj.z + w * obj.w);
 	}

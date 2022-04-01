@@ -9,6 +9,7 @@
 #include "Intersections.h"
 #include "Lighting.h"
 #include "Material.h"
+#include "Sphere.h"
 
 struct Projectile
 {
@@ -103,7 +104,7 @@ void renderSphere2D()
             Point pos = Point{world_x, world_y, wall_z};
             Ray r = Ray{ray_origin, (pos - ray_origin).norm()};
 
-            std::vector<Intersection> xs = r.intersects(s);
+            std::vector<Intersection> xs = s.intersects(r);
 
             if (Intersections{xs}.hit())
             {
@@ -147,14 +148,14 @@ void renderSphere3D()
             Point pos = Point{world_x, world_y, wall_z};
             Ray r = Ray{ray_origin, (pos - ray_origin).norm()};
 
-            std::vector<Intersection> xs = r.intersects(s);
+            std::vector<Intersection> xs = s.intersects(r);
 
             std::optional<Intersection> hit = Intersections{xs}.hit();
             if (hit)
             {
                 Point point = r.position(hit->t);
                 Vector normal = s.normal_at(point);
-                Vector eye = Vector{0,0,0} - r.dir;
+                Vector eye = Vector{0,0,0} - r.Dir();
                 Color color = Lighting::lighting(s.material, light, point, eye, normal);
                 c.write_pixel(x, y, color);
             }

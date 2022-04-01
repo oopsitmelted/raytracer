@@ -28,7 +28,7 @@ public:
 	Matrix rotate_y(float r);
 	Matrix rotate_z(float r);
 	Matrix shear(float x_y, float x_z, float y_x, float y_z, float z_x, float z_y);
-	bool operator==(Matrix& n);
+	bool operator==(Matrix& n) const;
 	Matrix<4,1> operator*(Matrix<4, 1>& n);
 	Matrix<4,4> operator*(Matrix<4, 4>& n);
 	Tuple operator*(Tuple& t);
@@ -234,7 +234,7 @@ public:
 	}
 
     template <int ROWS, int COLS>
-	bool Matrix<ROWS,COLS>::operator==(Matrix<ROWS,COLS>& n)
+	bool Matrix<ROWS,COLS>::operator==(Matrix<ROWS,COLS>& n) const
 	{
 		for (int r = 0; r < ROWS; r++)
 			for (int c = 0; c < COLS; c++)
@@ -285,10 +285,10 @@ public:
 	inline Tuple Matrix<4,4>::operator*(Tuple& t)
 	{
 		Matrix<4,1> n;
-		n.set(0, 0, t.x);
-		n.set(1, 0, t.y);
-		n.set(2, 0, t.z);
-		n.set(3, 0, t.w);
+		n.set(0, 0, t.X());
+		n.set(1, 0, t.Y());
+		n.set(2, 0, t.Z());
+		n.set(3, 0, t.W());
 		n = *this * n;
 		return Tuple{ n.get(0,0), n.get(1,0), n.get(2,0), n.get(3,0) };
 	}
@@ -298,7 +298,7 @@ public:
 	{
 		Tuple t = *this * static_cast<Tuple&>(v);
 
-		return Vector{ t.x, t.y, t.z };
+		return Vector{ t.X(), t.Y(), t.Z() };
 	}
 
     template<>
@@ -306,7 +306,7 @@ public:
 	{
 		Tuple t = *this * static_cast<Tuple&>(v);
 
-		return Point{ t.x, t.y, t.z };
+		return Point{ t.X(), t.Y(), t.Z() };
 	}
 
     template <int ROWS, int COLS>

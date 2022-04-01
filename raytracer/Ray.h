@@ -2,7 +2,6 @@
 #include <array>
 #include "Vector.h"
 #include "Point.h"
-#include "Sphere.h"
 #include "Matrix.h"
 #include "Intersection.h"
 #include <vector>
@@ -10,15 +9,22 @@
 
 class Ray
 {
-public:
+private:
 	Vector dir;
 	Point orig;
-
+public:
 	Ray(Point o, Vector d) : dir(d), orig(o) {};
+
+	const Vector& Dir(){return dir;};
+	void Dir(Vector& d){dir = d;};
+
+	const Point& Orig(){return orig;};
+	void Orig(Point& o){orig = o;};
 
 	Point position(float t)
 	{
-		return orig + (dir * t);
+		Vector z = dir * t;
+		return orig + z;
 	}
 
 	Ray transform(Matrix<4,4> m)
@@ -28,35 +34,6 @@ public:
 		newRay.orig = m * orig;
 
 		return newRay;
-	}
-
-	std::vector<Intersection> intersects(Sphere& s)
-	{
-		std::vector<Intersection> r;
-		Ray r2 = this->transform(s.transform.inverse());
-		Vector sphere_to_ray = r2.orig - s.origin;
-		float a = r2.dir.dot(r2.dir);
-		float b = 2 * r2.dir.dot(sphere_to_ray);
-		float c = sphere_to_ray.dot(sphere_to_ray) - 1;
-
-		float d = b * b - 4 * a * c;
-
-		if (d < 0)
-		{
-			return r;
-		}
-
-		r.push_back(Intersection{ (-b - sqrt(d)) / (2 * a), s });
-		r.push_back(Intersection{ (-b + sqrt(d)) / (2 * a), s });
-
-		if (r[0].t > r[1].t) // ensure sorted
-		{
-			Intersection temp = r[1];
-			r[1] = r[0];
-			r[0] = temp;
-		}
-
-		return r;
 	}
 };
 

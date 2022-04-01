@@ -22,10 +22,10 @@ constexpr float epsilon = 0.00001f;
 TEST(Tuple, createtuple) 
 {
     Tuple t {4.3f, -4.2f, 3.1f, 1.0f};
-    EXPECT_EQ(t.x, 4.3f);
-    EXPECT_EQ(t.y, -4.2f);
-    EXPECT_EQ(t.z, 3.1f);
-    EXPECT_EQ(t.w, 1.0f);
+    EXPECT_EQ(t.X(), 4.3f);
+    EXPECT_EQ(t.Y(), -4.2f);
+    EXPECT_EQ(t.Z(), 3.1f);
+    EXPECT_EQ(t.W(), 1.0f);
 }
 
 TEST(Tuple, addtuple)
@@ -33,10 +33,10 @@ TEST(Tuple, addtuple)
     Tuple t1 {3.0f, -2.0f, 5.0f, 1.0f};
     Tuple t2{ -2.0f, 3.0f, 1.0f, 0.0f };
     Tuple t3 = t1 + t2;
-    EXPECT_EQ(t3.x, 1.0f);
-    EXPECT_EQ(t3.y, 1.0f);
-    EXPECT_EQ(t3.z, 6.0f);
-    EXPECT_EQ(t3.w, 1.0f);
+    EXPECT_EQ(t3.X(), 1.0f);
+    EXPECT_EQ(t3.Y(), 1.0f);
+    EXPECT_EQ(t3.Z(), 6.0f);
+    EXPECT_EQ(t3.W(), 1.0f);
 }
 
 TEST(Tuple, subpoints)
@@ -45,10 +45,10 @@ TEST(Tuple, subpoints)
     Point p2{ 5.0f, 6.0f, 7.0f };
     Vector v1{ -2.0f, -4.0f, -6.0f };
     Tuple t1 = static_cast<Tuple> (p1 - p2);
-    EXPECT_EQ(t1.x, v1.x);
-    EXPECT_EQ(t1.y, v1.y);
-    EXPECT_EQ(t1.z, v1.z);
-    EXPECT_EQ(t1.w, v1.w);
+    EXPECT_EQ(t1.X(), v1.X());
+    EXPECT_EQ(t1.Y(), v1.Y());
+    EXPECT_EQ(t1.Z(), v1.Z());
+    EXPECT_EQ(t1.W(), v1.W());
 }
 
 TEST(Tuple, subvectorfrompoint)
@@ -57,20 +57,20 @@ TEST(Tuple, subvectorfrompoint)
     Vector v1{ 5.0f, 6.0f, 7.0f };
     Tuple t1 = p1 - v1;
     Point p2{ -2.0f, -4.0f, -6.0f };
-    EXPECT_EQ(t1.x, p2.x);
-    EXPECT_EQ(t1.y, p2.y);
-    EXPECT_EQ(t1.z, p2.z);
-    EXPECT_EQ(t1.w, p2.w);
+    EXPECT_EQ(t1.X(), p2.X());
+    EXPECT_EQ(t1.Y(), p2.Y());
+    EXPECT_EQ(t1.Z(), p2.Z());
+    EXPECT_EQ(t1.W(), p2.W());
 }
 
 TEST(Tuple, negate)
 {
     Tuple t1{ 1.0f, -2.0f, 3.0f, -4.0f };
     Tuple t2 = -t1;
-    EXPECT_EQ(t1.x, -t2.x);
-    EXPECT_EQ(t1.y, -t2.y);
-    EXPECT_EQ(t1.z, -t2.z);
-    EXPECT_EQ(t1.w, -t2.w);
+    EXPECT_EQ(t1.X(), -t2.X());
+    EXPECT_EQ(t1.Y(), -t2.Y());
+    EXPECT_EQ(t1.Z(), -t2.Z());
+    EXPECT_EQ(t1.W(), -t2.W());
 }
 
 TEST(Tuple, multscalar)
@@ -78,41 +78,41 @@ TEST(Tuple, multscalar)
     Tuple t1{ 1.0f, -2.0f, 3.0f, -4.0f };
     Tuple t2 = t1 * 3.5f;
     Tuple t3 = t1 * 0.5f;
-    EXPECT_EQ(t2.x, 3.5f);
-    EXPECT_EQ(t2.y, -7.0f);
-    EXPECT_EQ(t2.z, 10.5f);
-    EXPECT_EQ(t2.w, -14.0f);
-    EXPECT_EQ(t3.x, 0.5f);
-    EXPECT_EQ(t3.y, -1.0f);
-    EXPECT_EQ(t3.z, 1.5f);
-    EXPECT_EQ(t3.w, -2.0f);
+    EXPECT_EQ(t2.X(), 3.5f);
+    EXPECT_EQ(t2.Y(), -7.0f);
+    EXPECT_EQ(t2.Z(), 10.5f);
+    EXPECT_EQ(t2.W(), -14.0f);
+    EXPECT_EQ(t3.X(), 0.5f);
+    EXPECT_EQ(t3.Y(), -1.0f);
+    EXPECT_EQ(t3.Z(), 1.5f);
+    EXPECT_EQ(t3.W(), -2.0f);
 }
 
 TEST(Tuple, divscalar)
 {
     Tuple t1{ 1.0f, -2.0f, 3.0f, -4.0f };
     Tuple t2 = t1 / 2;
-    EXPECT_EQ(t2.x, 0.5f);
-    EXPECT_EQ(t2.y, -1.0f);
-    EXPECT_EQ(t2.z, 1.5f);
-    EXPECT_EQ(t2.w, -2.0f);
+    EXPECT_EQ(t2.X(), 0.5f);
+    EXPECT_EQ(t2.Y(), -1.0f);
+    EXPECT_EQ(t2.Z(), 1.5f);
+    EXPECT_EQ(t2.W(), -2.0f);
 }
 TEST(Point, createpoint)
 {
     Point p {4.0f, -4.0f, 3.0f};
-    EXPECT_EQ(p.x, 4.0f);
-    EXPECT_EQ(p.y, -4.0f);
-    EXPECT_EQ(p.z, 3.0f);
-    EXPECT_EQ(p.w, 1.0f);
+    EXPECT_EQ(p.X(), 4.0f);
+    EXPECT_EQ(p.Y(), -4.0f);
+    EXPECT_EQ(p.Z(), 3.0f);
+    EXPECT_EQ(p.W(), 1.0f);
 }
 
 TEST(Vector, createvector)
 {
     Vector v {4.0f, -4.0f, 3.0f};
-    EXPECT_EQ(v.x, 4.0f);
-    EXPECT_EQ(v.y, -4.0f);
-    EXPECT_EQ(v.z, 3.0f);
-    EXPECT_EQ(v.w, 0.0f);
+    EXPECT_EQ(v.X(), 4.0f);
+    EXPECT_EQ(v.Y(), -4.0f);
+    EXPECT_EQ(v.Z(), 3.0f);
+    EXPECT_EQ(v.W(), 0.0f);
 }
 
 TEST(Vector, mag)
@@ -133,14 +133,14 @@ TEST(Vector, norm)
 {
     Vector v1{ 4.0f, 0.0f, 0.0f };
     Vector n = v1.norm();
-    EXPECT_FLOAT_EQ(n.x, 1.0f);
-    EXPECT_FLOAT_EQ(n.y, 0.0f);
-    EXPECT_FLOAT_EQ(n.z, 0.0f);
+    EXPECT_FLOAT_EQ(n.X(), 1.0f);
+    EXPECT_FLOAT_EQ(n.Y(), 0.0f);
+    EXPECT_FLOAT_EQ(n.Z(), 0.0f);
     Vector v2{ 1.0f, 2.0f, 3.0f };
     n = v2.norm();
-    EXPECT_LT(abs(n.x - 1.0f/sqrt(14)), epsilon);
-    EXPECT_LT(abs(n.y - 2.0f/sqrt(14)), epsilon);
-    EXPECT_LT(abs(n.z - 3.0f/sqrt(14)), epsilon);
+    EXPECT_LT(abs(n.X() - 1.0f/sqrt(14)), epsilon);
+    EXPECT_LT(abs(n.Y() - 2.0f/sqrt(14)), epsilon);
+    EXPECT_LT(abs(n.Z() - 3.0f/sqrt(14)), epsilon);
 }
 
 TEST(Vector, dot)
@@ -156,14 +156,14 @@ TEST(Vector, cross)
     Vector v2{ 2.0f, 3.0f, 4.0f };
     Vector v3 = v1.cross(v2);
 
-    EXPECT_FLOAT_EQ(v3.x, -1.0f);
-    EXPECT_FLOAT_EQ(v3.y, 2.0f);
-    EXPECT_FLOAT_EQ(v3.z, -1.0f);
+    EXPECT_FLOAT_EQ(v3.X(), -1.0f);
+    EXPECT_FLOAT_EQ(v3.Y(), 2.0f);
+    EXPECT_FLOAT_EQ(v3.Z(), -1.0f);
 
     v3 = v2.cross(v1);
-    EXPECT_FLOAT_EQ(v3.x, 1.0f);
-    EXPECT_FLOAT_EQ(v3.y, -2.0f);
-    EXPECT_FLOAT_EQ(v3.z, 1.0f);
+    EXPECT_FLOAT_EQ(v3.X(), 1.0f);
+    EXPECT_FLOAT_EQ(v3.Y(), -2.0f);
+    EXPECT_FLOAT_EQ(v3.Z(), 1.0f);
 }
 
 TEST(Vector, reflect)
@@ -171,25 +171,25 @@ TEST(Vector, reflect)
     Vector v = Vector{1, -1, 0};
     Vector n = Vector{0, 1, 0};
     Vector r = v.reflect(n);
-    EXPECT_EQ(r.x, 1);
-    EXPECT_EQ(r.y, 1);
-    EXPECT_EQ(r.z, 0);
+    EXPECT_EQ(r.X(), 1);
+    EXPECT_EQ(r.Y(), 1);
+    EXPECT_EQ(r.Z(), 0);
 
     // slanted surface
     v = Vector{0, -1, 0};
     n = Vector{(float)(sqrt(2)/2), (float)(sqrt(2)/2), 0};
     r = v.reflect(n);
-    EXPECT_LT(r.x - 1, epsilon);
-    EXPECT_LT(r.y - 0, epsilon);
-    EXPECT_LT(r.z - 0, epsilon);
+    EXPECT_LT(r.X() - 1, epsilon);
+    EXPECT_LT(r.Y() - 0, epsilon);
+    EXPECT_LT(r.Z() - 0, epsilon);
 }
 
 TEST(Color, constructor)
 {
     Color c{ -0.5f, 0.4f, 1.7f };
-    EXPECT_FLOAT_EQ(c.red, -0.5f);
-    EXPECT_FLOAT_EQ(c.green, 0.4f);
-    EXPECT_FLOAT_EQ(c.blue, 1.7f);
+    EXPECT_FLOAT_EQ(c.Red(), -0.5f);
+    EXPECT_FLOAT_EQ(c.Green(), 0.4f);
+    EXPECT_FLOAT_EQ(c.Blue(), 1.7f);
 }
 
 TEST(Color, add)
@@ -197,9 +197,9 @@ TEST(Color, add)
     Color c1{ 0.9f, 0.6f, 0.75f };
     Color c2{ 0.7f, 0.1f, 0.25f };
     Color c3 = c1 + c2;
-    EXPECT_FLOAT_EQ(c3.red, 1.6f);
-    EXPECT_FLOAT_EQ(c3.green, 0.7f);
-    EXPECT_FLOAT_EQ(c3.blue, 1.0f);
+    EXPECT_FLOAT_EQ(c3.Red(), 1.6f);
+    EXPECT_FLOAT_EQ(c3.Green(), 0.7f);
+    EXPECT_FLOAT_EQ(c3.Blue(), 1.0f);
 }
 
 TEST(Color, sub)
@@ -207,18 +207,18 @@ TEST(Color, sub)
     Color c1{ 0.9f, 0.6f, 0.75f };
     Color c2{ 0.7f, 0.1f, 0.25f };
     Color c3 = c1 - c2;
-    EXPECT_FLOAT_EQ(c3.red, 0.2f);
-    EXPECT_FLOAT_EQ(c3.green, 0.5f);
-    EXPECT_FLOAT_EQ(c3.blue, 0.5f);
+    EXPECT_FLOAT_EQ(c3.Red(), 0.2f);
+    EXPECT_FLOAT_EQ(c3.Green(), 0.5f);
+    EXPECT_FLOAT_EQ(c3.Blue(), 0.5f);
 }
 
 TEST(Color, scalarmult)
 {
     Color c1{ 0.2f, 0.3f, 0.4f };
     Color c2 = c1 * 2;
-    EXPECT_FLOAT_EQ(c2.red, 0.4f);
-    EXPECT_FLOAT_EQ(c2.green, 0.6f);
-    EXPECT_FLOAT_EQ(c2.blue, 0.8f);
+    EXPECT_FLOAT_EQ(c2.Red(), 0.4f);
+    EXPECT_FLOAT_EQ(c2.Green(), 0.6f);
+    EXPECT_FLOAT_EQ(c2.Blue(), 0.8f);
 }
 
 TEST(Color, colormult)
@@ -226,9 +226,9 @@ TEST(Color, colormult)
     Color c1{ 1.0f, 0.2f, 0.4f };
     Color c2{ 0.9f, 1.0f, 0.1f };
     Color c3 = c1 * c2;
-    EXPECT_FLOAT_EQ(c3.red, 0.9f);
-    EXPECT_FLOAT_EQ(c3.green, 0.2f);
-    EXPECT_FLOAT_EQ(c3.blue, 0.04f);
+    EXPECT_FLOAT_EQ(c3.Red(), 0.9f);
+    EXPECT_FLOAT_EQ(c3.Green(), 0.2f);
+    EXPECT_FLOAT_EQ(c3.Blue(), 0.04f);
 }
 
 TEST(Canvas, constructor)
@@ -239,9 +239,9 @@ TEST(Canvas, constructor)
     for (int i = 0; i < 10; i++)
         for (int j = 0; j < 20; j++)
         {
-            EXPECT_FLOAT_EQ(c.pixel_at(i, j).red, 0.0f);
-            EXPECT_FLOAT_EQ(c.pixel_at(i, j).green, 0.0f);
-            EXPECT_FLOAT_EQ(c.pixel_at(i, j).blue, 0.0f);
+            EXPECT_FLOAT_EQ(c.pixel_at(i, j).Red(), 0.0f);
+            EXPECT_FLOAT_EQ(c.pixel_at(i, j).Green(), 0.0f);
+            EXPECT_FLOAT_EQ(c.pixel_at(i, j).Blue(), 0.0f);
         }
 }
 
@@ -250,9 +250,9 @@ TEST(Canvas, readwritepixel)
     Canvas c{ 10, 20 };
     Color red{ 1.0f, 0.0f, 0.0f };
     c.write_pixel(2, 3, red);
-    EXPECT_FLOAT_EQ(c.pixel_at(2, 3).red, 1.0f);
-    EXPECT_FLOAT_EQ(c.pixel_at(2, 3).green, 0.0f);
-    EXPECT_FLOAT_EQ(c.pixel_at(2, 3).blue, 0.0f);
+    EXPECT_FLOAT_EQ(c.pixel_at(2, 3).Red(), 1.0f);
+    EXPECT_FLOAT_EQ(c.pixel_at(2, 3).Green(), 0.0f);
+    EXPECT_FLOAT_EQ(c.pixel_at(2, 3).Blue(), 0.0f);
 }
 
 TEST(Canvas, serialize)
@@ -662,20 +662,20 @@ TEST(Matrix, rotation_x)
     Point a = half_quarter * p;
     Point b = Point{ 0, static_cast<float>(sqrt(2)) / 2.0f, 
         static_cast<float>(sqrt(2)) / 2.0f };
-    EXPECT_LT(abs(a.x - b.x) , epsilon);
-    EXPECT_LT(abs(a.y - b.y) , epsilon);
-    EXPECT_LT(abs(a.z - b.z) , epsilon);
+    EXPECT_LT(abs(a.X() - b.X()) , epsilon);
+    EXPECT_LT(abs(a.Y() - b.Y()) , epsilon);
+    EXPECT_LT(abs(a.Z() - b.Z()) , epsilon);
 
     Point p1 = full_quarter * p;
-    EXPECT_LT(abs(p1.x), epsilon);
-    EXPECT_LT(abs(p1.y), epsilon);
-    EXPECT_LT(abs(p1.z - 1), epsilon);
+    EXPECT_LT(abs(p1.X()), epsilon);
+    EXPECT_LT(abs(p1.Y()), epsilon);
+    EXPECT_LT(abs(p1.Z() - 1), epsilon);
 
     // Inverse
     Point p2 = half_quarter.inverse() * p;
-    EXPECT_LT(abs(p2.x), epsilon);
-    EXPECT_LT(abs(p2.y - sqrt(2)/2), epsilon);
-    EXPECT_LT(abs(p2.z + sqrt(2)/2), epsilon);
+    EXPECT_LT(abs(p2.X()), epsilon);
+    EXPECT_LT(abs(p2.Y() - sqrt(2)/2), epsilon);
+    EXPECT_LT(abs(p2.Z() + sqrt(2)/2), epsilon);
 }
 
 TEST(Matrix, rotation_y)
@@ -685,14 +685,14 @@ TEST(Matrix, rotation_y)
     Matrix full_quarter = Matrix<4,4>::identity().rotate_y(PI / 2);
 
     Point p1 = half_quarter * p;
-    EXPECT_LT(abs(p1.x - sqrt(2)/2), epsilon);
-    EXPECT_LT(abs(p1.y), epsilon);
-    EXPECT_LT(abs(p1.z - sqrt(2)/2), epsilon);
+    EXPECT_LT(abs(p1.X() - sqrt(2)/2), epsilon);
+    EXPECT_LT(abs(p1.Y()), epsilon);
+    EXPECT_LT(abs(p1.Z() - sqrt(2)/2), epsilon);
 
     Point p2 = full_quarter * p;
-    EXPECT_LT(abs(p2.x - 1), epsilon);
-    EXPECT_LT(abs(p2.y), epsilon);
-    EXPECT_LT(abs(p2.z), epsilon);
+    EXPECT_LT(abs(p2.X() - 1), epsilon);
+    EXPECT_LT(abs(p2.Y()), epsilon);
+    EXPECT_LT(abs(p2.Z()), epsilon);
 }
 
 TEST(Matrix, rotation_z)
@@ -702,14 +702,14 @@ TEST(Matrix, rotation_z)
     Matrix full_quarter = Matrix<4,4>::identity().rotate_z(PI / 2);
 
     Point p1 = half_quarter * p;
-    EXPECT_LT(abs(p1.x + sqrt(2) / 2), epsilon);
-    EXPECT_LT(abs(p1.y - sqrt(2) / 2), epsilon);
-    EXPECT_LT(abs(p1.z), epsilon);
+    EXPECT_LT(abs(p1.X() + sqrt(2) / 2), epsilon);
+    EXPECT_LT(abs(p1.Y() - sqrt(2) / 2), epsilon);
+    EXPECT_LT(abs(p1.Z()), epsilon);
 
     Point p2 = full_quarter * p;
-    EXPECT_LT(abs(p2.x + 1), epsilon);
-    EXPECT_LT(abs(p2.y), epsilon);
-    EXPECT_LT(abs(p2.z), epsilon);
+    EXPECT_LT(abs(p2.X() + 1), epsilon);
+    EXPECT_LT(abs(p2.Y()), epsilon);
+    EXPECT_LT(abs(p2.Z()), epsilon);
 }
 
 TEST(Matrix, shear)
@@ -757,7 +757,8 @@ TEST(Ray, create)
 
     Ray r{ origin, direction };
 
-    EXPECT_EQ(((r.orig == origin) && (r.dir == direction)), true);
+    bool b = r.Orig() == origin ? true : false;
+    EXPECT_EQ(((r.Orig() == origin) && (r.Dir() == direction)), true);
 }
 
 TEST(Ray, position)
@@ -778,29 +779,29 @@ TEST(Ray, sphereintersect)
     Sphere s;
     Ray r{ Point{0,0,-5}, Vector{0,0,1} };
 
-    std::vector<Intersection> xs = r.intersects(s);
+    std::vector<Intersection> xs = s.intersects(r);
     EXPECT_EQ(xs.size(), 2);
     EXPECT_FLOAT_EQ(xs[0].t, 4);
     EXPECT_FLOAT_EQ(xs[1].t, 6);
 
     r = Ray{ Point{0, 1, -5}, Vector{0, 0, 1} };
-    xs = r.intersects(s);
+    xs = s.intersects(r);
     EXPECT_EQ(xs.size(), 2);
     EXPECT_FLOAT_EQ(xs[0].t, 5);
     EXPECT_FLOAT_EQ(xs[1].t, 5);
 
     r = Ray{ Point{0, 2, -5}, Vector{0, 0, 1} };
-    xs = r.intersects(s);
+    xs = s.intersects(r);
     EXPECT_EQ(xs.size(), 0);
 
     r = Ray{ Point{0, 0, 0}, Vector{0, 0, 1} };
-    xs = r.intersects(s);
+    xs = s.intersects(r);
     EXPECT_EQ(xs.size(), 2);
     EXPECT_FLOAT_EQ(xs[0].t, -1);
     EXPECT_FLOAT_EQ(xs[1].t, 1);
 
     r = Ray{ Point{0, 0, 5}, Vector{0, 0, 1} };
-    xs = r.intersects(s);
+    xs = s.intersects(r);
     EXPECT_EQ(xs.size(), 2);
     EXPECT_FLOAT_EQ(xs[0].t, -6);
     EXPECT_FLOAT_EQ(xs[1].t, -4);
@@ -818,7 +819,7 @@ TEST(Ray, intersections)
     Sphere s;
     Ray r{ Point{0, 0, -5}, Vector{0, 0, 1} };
 
-    std::vector<Intersection> xs = r.intersects(s);
+    std::vector<Intersection> xs = s.intersects(r);
     EXPECT_EQ(xs.size(), 2);
     EXPECT_EQ(&xs[0].object, &s);
     EXPECT_EQ(&xs[1].object, &s);
@@ -867,38 +868,38 @@ TEST(Ray, transform)
     Matrix m = Matrix<4,4>::identity().translate(3, 4, 5);
 
     Ray r2 = r.transform(m);
-    EXPECT_EQ((r2.dir == Vector{ 0, 1, 0 }), true);
-    EXPECT_EQ((r2.orig == Point{ 4, 6, 8 }), true);
+    EXPECT_EQ((r2.Dir() == Vector{ 0, 1, 0 }), true);
+    EXPECT_EQ((r2.Orig() == Point{ 4, 6, 8 }), true);
 
     m = Matrix<4,4>::identity().scale(2, 3, 4);
     r2 = r.transform(m);
-    EXPECT_EQ((r2.dir == Vector{ 0, 3, 0 }), true);
-    EXPECT_EQ((r2.orig == Point{ 2, 6, 12 }), true);
+    EXPECT_EQ((r2.Dir() == Vector{ 0, 3, 0 }), true);
+    EXPECT_EQ((r2.Orig() == Point{ 2, 6, 12 }), true);
 }
 
 TEST(Sphere, transform)
 {
     Sphere s;
     Matrix m_i = Matrix<4,4>::identity();
-    EXPECT_EQ((s.transform == m_i), true);
+    EXPECT_EQ((s.Transform() == m_i), true);
 
     Matrix m = Matrix<4,4>::identity().translate(2, 3, 4);
-    s.transform = m;
-    EXPECT_EQ((s.transform == m), true);
+    s.Transform(m);
+    EXPECT_EQ((s.Transform() == m), true);
 }
 
 TEST(Sphere, translated_sphere_with_ray)
 {
     Sphere s;
     Ray r{Point{0, 0, -5}, Vector{0, 0, 1}};
-    s.transform = Matrix<4,4>::identity().scale(2, 2, 2);
-    std::vector<Intersection> xs = r.intersects(s);
+    s.Transform(Matrix<4,4>::identity().scale(2, 2, 2));
+    std::vector<Intersection> xs = s.intersects(r);
     EXPECT_EQ(xs.size(), 2);
     EXPECT_FLOAT_EQ(xs[0].t, 3);
     EXPECT_FLOAT_EQ(xs[1].t, 7);
 
-    s.transform = Matrix<4,4>::identity().translate(5, 0, 0);
-    xs = r.intersects(s);
+    s.Transform(Matrix<4,4>::identity().translate(5, 0, 0));
+    xs = s.intersects(r);
     EXPECT_EQ(xs.size(), 0);
 }
 
@@ -906,81 +907,81 @@ TEST(Sphere, normals)
 {
     Sphere s;
     Vector n = s.normal_at(Point{1, 0, 0});
-    EXPECT_EQ(n.x, 1);
-    EXPECT_EQ(n.y, 0);
-    EXPECT_EQ(n.z, 0);
+    EXPECT_EQ(n.X(), 1);
+    EXPECT_EQ(n.Y(), 0);
+    EXPECT_EQ(n.Z(), 0);
 
     n = s.normal_at(Point{0, 1, 0});
-    EXPECT_EQ(n.x, 0);
-    EXPECT_EQ(n.y, 1);
-    EXPECT_EQ(n.z, 0);
+    EXPECT_EQ(n.X(), 0);
+    EXPECT_EQ(n.Y(), 1);
+    EXPECT_EQ(n.Z(), 0);
 
     n = s.normal_at(Point{0, 0, 1});
-    EXPECT_EQ(n.x, 0);
-    EXPECT_EQ(n.y, 0);
-    EXPECT_EQ(n.z, 1);
+    EXPECT_EQ(n.X(), 0);
+    EXPECT_EQ(n.Y(), 0);
+    EXPECT_EQ(n.Z(), 1);
 
     n = s.normal_at(Point{(float)(sqrt(3)/3), (float)(sqrt(3)/3), (float)(sqrt(3)/3)});
-    EXPECT_FLOAT_EQ(n.x, sqrt(3)/3);
-    EXPECT_FLOAT_EQ(n.y, sqrt(3)/3);
-    EXPECT_FLOAT_EQ(n.z, sqrt(3)/3);
+    EXPECT_FLOAT_EQ(n.X(), sqrt(3)/3);
+    EXPECT_FLOAT_EQ(n.Y(), sqrt(3)/3);
+    EXPECT_FLOAT_EQ(n.Z(), sqrt(3)/3);
 
     Vector nn = n.norm();
-    EXPECT_FLOAT_EQ(n.x, nn.x);
-    EXPECT_FLOAT_EQ(n.y, nn.y);
-    EXPECT_FLOAT_EQ(n.z, nn.z);
+    EXPECT_FLOAT_EQ(n.X(), nn.X());
+    EXPECT_FLOAT_EQ(n.Y(), nn.Y());
+    EXPECT_FLOAT_EQ(n.Z(), nn.Z());
 }
 
 TEST(Sphere, norm_of_translated)
 {
     Sphere s;
-    s.transform = Matrix<4,4>::identity().translate(0, 1, 0);
+    s.Transform(Matrix<4,4>::identity().translate(0, 1, 0));
     Vector n = s.normal_at(Point{0, 1.70711, -0.70711});
-    EXPECT_LT(n.x - 0, epsilon);
-    EXPECT_LT(n.y - 0.70711, epsilon);
-    EXPECT_LT(n.z - -0.70711, epsilon);
+    EXPECT_LT(n.X() - 0, epsilon);
+    EXPECT_LT(n.Y() - 0.70711, epsilon);
+    EXPECT_LT(n.Z() - -0.70711, epsilon);
 }
 
 TEST(Sphere, norm_of_transformed)
 {
     Sphere s;
-    s.transform = Matrix<4,4>::identity().scale(1, 0.5, 1).rotate_z(PI/5);
+    s.Transform(Matrix<4,4>::identity().scale(1, 0.5, 1).rotate_z(PI/5));
     Vector n = s.normal_at(Point{0, (float)(sqrt(2)/2), (float)(-sqrt(2)/2)});
-    EXPECT_LT(n.x - 0, epsilon);
-    EXPECT_LT(n.y - 0.97014, epsilon);
-    EXPECT_LT(n.z - -0.24254, epsilon);
+    EXPECT_LT(n.X() - 0, epsilon);
+    EXPECT_LT(n.Y() - 0.97014, epsilon);
+    EXPECT_LT(n.Z() - -0.24254, epsilon);
 }
 
 TEST(Sphere, material)
 {
     Sphere s;
-    Material m1 = s.material;
+    Material m1 = s.Mat();
     Material m2;
 
-    EXPECT_FLOAT_EQ(m1.ambient, m2.ambient);
-    EXPECT_FLOAT_EQ(m1.diffuse, m2.diffuse);
-    EXPECT_FLOAT_EQ(m1.shininess, m2.shininess);
-    EXPECT_FLOAT_EQ(m1.color.red, m2.color.red);
-    EXPECT_FLOAT_EQ(m1.color.green, m2.color.green);
-    EXPECT_FLOAT_EQ(m1.color.blue, m2.color.blue);
+    EXPECT_FLOAT_EQ(m1.Ambient(), m2.Ambient());
+    EXPECT_FLOAT_EQ(m1.Diffuse(), m2.Diffuse());
+    EXPECT_FLOAT_EQ(m1.Shininess(), m2.Shininess());
+    EXPECT_FLOAT_EQ(m1.Col().Red(), m2.Col().Red());
+    EXPECT_FLOAT_EQ(m1.Col().Green(), m2.Col().Green());
+    EXPECT_FLOAT_EQ(m1.Col().Blue(), m2.Col().Blue());
 
     // s can be assigned a material
-    m2.ambient = 1;
-    s.material = m2;
-    EXPECT_FLOAT_EQ(s.material.ambient, 1);
+    m2.Ambient(1);
+    s.Mat(m2);
+    EXPECT_FLOAT_EQ(s.Mat().Ambient(), 1);
 }
 
 TEST(Material, default)
 {
     Material m;
     
-    EXPECT_EQ(m.color.red, 1);
-    EXPECT_EQ(m.color.green, 1);
-    EXPECT_EQ(m.color.blue, 1);
-    EXPECT_FLOAT_EQ(m.ambient, 0.1);
-    EXPECT_FLOAT_EQ(m.diffuse, 0.9);
-    EXPECT_FLOAT_EQ(m.specular, 0.9);
-    EXPECT_FLOAT_EQ(m.shininess, 200.0);
+    EXPECT_EQ(m.Col().Red(), 1);
+    EXPECT_EQ(m.Col().Green(), 1);
+    EXPECT_EQ(m.Col().Blue(), 1);
+    EXPECT_FLOAT_EQ(m.Ambient(), 0.1);
+    EXPECT_FLOAT_EQ(m.Diffuse(), 0.9);
+    EXPECT_FLOAT_EQ(m.Specular(), 0.9);
+    EXPECT_FLOAT_EQ(m.Shininess(), 200.0);
 }
 
 TEST(Lighting, light_eye_surface)
@@ -992,9 +993,9 @@ TEST(Lighting, light_eye_surface)
     PointLight light = PointLight {Color{1, 1, 1}, Point{0, 0, -10}};
 
     Color result = Lighting::lighting(m, light, position, eyev, normalv);
-    EXPECT_FLOAT_EQ(result.red, 1.9);
-    EXPECT_FLOAT_EQ(result.green, 1.9);
-    EXPECT_FLOAT_EQ(result.blue, 1.9);
+    EXPECT_FLOAT_EQ(result.Red(), 1.9);
+    EXPECT_FLOAT_EQ(result.Green(), 1.9);
+    EXPECT_FLOAT_EQ(result.Blue(), 1.9);
 }
 
 TEST(Lighting, light_eye_surface_eye_45_degree)
@@ -1006,9 +1007,9 @@ TEST(Lighting, light_eye_surface_eye_45_degree)
     PointLight light = PointLight {Color{1, 1, 1}, Point{0, 0, -10}};
 
     Color result = Lighting::lighting(m, light, position, eyev, normalv);
-    EXPECT_FLOAT_EQ(result.red, 1.0);
-    EXPECT_FLOAT_EQ(result.green, 1.0);
-    EXPECT_FLOAT_EQ(result.blue, 1.0);
+    EXPECT_FLOAT_EQ(result.Red(), 1.0);
+    EXPECT_FLOAT_EQ(result.Green(), 1.0);
+    EXPECT_FLOAT_EQ(result.Blue(), 1.0);
 }
 
 TEST(Lighting, light_eye_opposite_surface_light_45_degree)
@@ -1020,9 +1021,9 @@ TEST(Lighting, light_eye_opposite_surface_light_45_degree)
     PointLight light = PointLight {Color{1, 1, 1}, Point{0, 10, -10}};
 
     Color result = Lighting::lighting(m, light, position, eyev, normalv);
-    EXPECT_LT(result.red - 0.7364, epsilon);
-    EXPECT_LT(result.green - 0.7364, epsilon);
-    EXPECT_LT(result.blue - 0.7364, epsilon);
+    EXPECT_LT(result.Red() - 0.7364, epsilon);
+    EXPECT_LT(result.Green() - 0.7364, epsilon);
+    EXPECT_LT(result.Blue() - 0.7364, epsilon);
 }
 
 TEST(Lighting, light_eye_in_path_of_reflection_vector)
@@ -1034,9 +1035,9 @@ TEST(Lighting, light_eye_in_path_of_reflection_vector)
     PointLight light = PointLight {Color{1, 1, 1}, Point{0, 10, -10}};
 
     Color result = Lighting::lighting(m, light, position, eyev, normalv);
-    EXPECT_LT(result.red - 1.6364, epsilon);
-    EXPECT_LT(result.green - 1.6364, epsilon);
-    EXPECT_LT(result.blue - 1.6364, epsilon);
+    EXPECT_LT(result.Red() - 1.6364, epsilon);
+    EXPECT_LT(result.Green() - 1.6364, epsilon);
+    EXPECT_LT(result.Blue() - 1.6364, epsilon);
 }
 
 TEST(Lighting, light_behind_surface)
@@ -1048,7 +1049,7 @@ TEST(Lighting, light_behind_surface)
     PointLight light = PointLight {Color{1, 1, 1}, Point{0, 0, 10}};
 
     Color result = Lighting::lighting(m, light, position, eyev, normalv);
-    EXPECT_LT(result.red - 0.1, epsilon);
-    EXPECT_LT(result.green - 0.1, epsilon);
-    EXPECT_LT(result.blue - 0.1, epsilon);
+    EXPECT_LT(result.Red() - 0.1, epsilon);
+    EXPECT_LT(result.Green() - 0.1, epsilon);
+    EXPECT_LT(result.Blue() - 0.1, epsilon);
 }
