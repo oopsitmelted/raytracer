@@ -15,11 +15,11 @@ private:
 public:
 	Ray(Point o, Vector d) : dir(d), orig(o) {};
 
-	const Vector& Dir(){return dir;};
-	void Dir(Vector& d){dir = d;};
+	const Vector& getDir(){return dir;};
+	void setDir(Vector& d){dir = d;};
 
-	const Point& Orig(){return orig;};
-	void Orig(Point& o){orig = o;};
+	const Point& getOrig(){return orig;};
+	void setOrig(Point& o){orig = o;};
 
 	Point position(float t)
 	{

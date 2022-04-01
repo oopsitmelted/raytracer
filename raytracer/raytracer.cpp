@@ -133,9 +133,9 @@ void renderSphere3D()
 
     Canvas c{canvas_size, canvas_size};
     Sphere s;
-    Material mat = s.Mat();
-    mat.Col(Color{1, 0.2, 1});
-    s.Mat(mat);
+    Material mat = s.getMaterial();
+    mat.setColor(Color{1, 0.2, 1});
+    s.setMaterial(mat);
     Point light_position = Point{-10, 10, -10};
     Color light_color = Color{1, 1, 1};
     PointLight light = PointLight{light_color, light_position};
@@ -157,8 +157,8 @@ void renderSphere3D()
             {
                 Point point = r.position(hit->t);
                 Vector normal = s.normal_at(point);
-                Vector eye = Vector{0,0,0} - r.Dir();
-                Color color = Lighting::lighting(s.Mat(), light, point, eye, normal);
+                Vector eye = Vector{0,0,0} - r.getDir();
+                Color color = Lighting::lighting(s.getMaterial(), light, point, eye, normal);
                 c.write_pixel(x, y, color);
             }
         }

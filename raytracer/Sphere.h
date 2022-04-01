@@ -16,21 +16,21 @@ private:
 public:
 	Sphere() : origin(0, 0, 0), radius(1), transform(Matrix<4,4>::identity()), material(Material{}) {};
 
-	const Matrix<4,4>& Transform() const {return transform;};
-	const Point& Origin() const {return origin;};
-	const float& Radius() const {return radius;};
-	const Material& Mat() const {return material;};
+	const Matrix<4,4>& getTransform() const {return transform;};
+	const Point& getOrigin() const {return origin;};
+	const float& getRadius() const {return radius;};
+	const Material& getMaterial() const {return material;};
 
-	void Transform(Matrix<4,4> t){transform = t;};
-	void Mat(Material m) {material = m;};
+	void setTransform(Matrix<4,4> t){transform = t;};
+	void setMaterial(Material m) {material = m;};
 
 	std::vector<Intersection> intersects(Ray& r)
 	{
 		std::vector<Intersection> i;
 		Ray r2 = r.transform(this->transform.inverse());
-		Vector sphere_to_ray = r2.Orig() - origin;
-		float a = r2.Dir().dot(r2.Dir());
-		float b = 2 * r2.Dir().dot(sphere_to_ray);
+		Vector sphere_to_ray = r2.getOrig() - origin;
+		float a = r2.getDir().dot(r2.getDir());
+		float b = 2 * r2.getDir().dot(sphere_to_ray);
 		float c = sphere_to_ray.dot(sphere_to_ray) - 1;
 
 		float d = b * b - 4 * a * c;

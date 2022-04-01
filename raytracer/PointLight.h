@@ -9,6 +9,6 @@ private:
     Point pos;
 public:
     PointLight (Color i, Point p) : intensity(i), pos(p) {};
-    const Color& Intensity() const {return intensity;};
-    const Point& Pos() const {return pos;};
+    const Color& getIntensity() const {return intensity;};
+    const Point& getPos() const {return pos;};
 };

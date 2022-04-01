@@ -187,9 +187,9 @@ TEST(Vector, reflect)
 TEST(Color, constructor)
 {
     Color c{ -0.5f, 0.4f, 1.7f };
-    EXPECT_FLOAT_EQ(c.Red(), -0.5f);
-    EXPECT_FLOAT_EQ(c.Green(), 0.4f);
-    EXPECT_FLOAT_EQ(c.Blue(), 1.7f);
+    EXPECT_FLOAT_EQ(c.getRed(), -0.5f);
+    EXPECT_FLOAT_EQ(c.getGreen(), 0.4f);
+    EXPECT_FLOAT_EQ(c.getBlue(), 1.7f);
 }
 
 TEST(Color, add)
@@ -197,9 +197,9 @@ TEST(Color, add)
     Color c1{ 0.9f, 0.6f, 0.75f };
     Color c2{ 0.7f, 0.1f, 0.25f };
     Color c3 = c1 + c2;
-    EXPECT_FLOAT_EQ(c3.Red(), 1.6f);
-    EXPECT_FLOAT_EQ(c3.Green(), 0.7f);
-    EXPECT_FLOAT_EQ(c3.Blue(), 1.0f);
+    EXPECT_FLOAT_EQ(c3.getRed(), 1.6f);
+    EXPECT_FLOAT_EQ(c3.getGreen(), 0.7f);
+    EXPECT_FLOAT_EQ(c3.getBlue(), 1.0f);
 }
 
 TEST(Color, sub)
@@ -207,18 +207,18 @@ TEST(Color, sub)
     Color c1{ 0.9f, 0.6f, 0.75f };
     Color c2{ 0.7f, 0.1f, 0.25f };
     Color c3 = c1 - c2;
-    EXPECT_FLOAT_EQ(c3.Red(), 0.2f);
-    EXPECT_FLOAT_EQ(c3.Green(), 0.5f);
-    EXPECT_FLOAT_EQ(c3.Blue(), 0.5f);
+    EXPECT_FLOAT_EQ(c3.getRed(), 0.2f);
+    EXPECT_FLOAT_EQ(c3.getGreen(), 0.5f);
+    EXPECT_FLOAT_EQ(c3.getBlue(), 0.5f);
 }
 
 TEST(Color, scalarmult)
 {
     Color c1{ 0.2f, 0.3f, 0.4f };
     Color c2 = c1 * 2;
-    EXPECT_FLOAT_EQ(c2.Red(), 0.4f);
-    EXPECT_FLOAT_EQ(c2.Green(), 0.6f);
-    EXPECT_FLOAT_EQ(c2.Blue(), 0.8f);
+    EXPECT_FLOAT_EQ(c2.getRed(), 0.4f);
+    EXPECT_FLOAT_EQ(c2.getGreen(), 0.6f);
+    EXPECT_FLOAT_EQ(c2.getBlue(), 0.8f);
 }
 
 TEST(Color, colormult)
@@ -226,9 +226,9 @@ TEST(Color, colormult)
     Color c1{ 1.0f, 0.2f, 0.4f };
     Color c2{ 0.9f, 1.0f, 0.1f };
     Color c3 = c1 * c2;
-    EXPECT_FLOAT_EQ(c3.Red(), 0.9f);
-    EXPECT_FLOAT_EQ(c3.Green(), 0.2f);
-    EXPECT_FLOAT_EQ(c3.Blue(), 0.04f);
+    EXPECT_FLOAT_EQ(c3.getRed(), 0.9f);
+    EXPECT_FLOAT_EQ(c3.getGreen(), 0.2f);
+    EXPECT_FLOAT_EQ(c3.getBlue(), 0.04f);
 }
 
 TEST(Canvas, constructor)
@@ -239,9 +239,9 @@ TEST(Canvas, constructor)
     for (int i = 0; i < 10; i++)
         for (int j = 0; j < 20; j++)
         {
-            EXPECT_FLOAT_EQ(c.pixel_at(i, j).Red(), 0.0f);
-            EXPECT_FLOAT_EQ(c.pixel_at(i, j).Green(), 0.0f);
-            EXPECT_FLOAT_EQ(c.pixel_at(i, j).Blue(), 0.0f);
+            EXPECT_FLOAT_EQ(c.pixel_at(i, j).getRed(), 0.0f);
+            EXPECT_FLOAT_EQ(c.pixel_at(i, j).getGreen(), 0.0f);
+            EXPECT_FLOAT_EQ(c.pixel_at(i, j).getBlue(), 0.0f);
         }
 }
 
@@ -250,9 +250,9 @@ TEST(Canvas, readwritepixel)
     Canvas c{ 10, 20 };
     Color red{ 1.0f, 0.0f, 0.0f };
     c.write_pixel(2, 3, red);
-    EXPECT_FLOAT_EQ(c.pixel_at(2, 3).Red(), 1.0f);
-    EXPECT_FLOAT_EQ(c.pixel_at(2, 3).Green(), 0.0f);
-    EXPECT_FLOAT_EQ(c.pixel_at(2, 3).Blue(), 0.0f);
+    EXPECT_FLOAT_EQ(c.pixel_at(2, 3).getRed(), 1.0f);
+    EXPECT_FLOAT_EQ(c.pixel_at(2, 3).getGreen(), 0.0f);
+    EXPECT_FLOAT_EQ(c.pixel_at(2, 3).getBlue(), 0.0f);
 }
 
 TEST(Canvas, serialize)
@@ -757,8 +757,8 @@ TEST(Ray, create)
 
     Ray r{ origin, direction };
 
-    bool b = r.Orig() == origin ? true : false;
-    EXPECT_EQ(((r.Orig() == origin) && (r.Dir() == direction)), true);
+    bool b = r.getOrig() == origin ? true : false;
+    EXPECT_EQ(((r.getOrig() == origin) && (r.getDir() == direction)), true);
 }
 
 TEST(Ray, position)
@@ -868,37 +868,37 @@ TEST(Ray, transform)
     Matrix m = Matrix<4,4>::identity().translate(3, 4, 5);
 
     Ray r2 = r.transform(m);
-    EXPECT_EQ((r2.Dir() == Vector{ 0, 1, 0 }), true);
-    EXPECT_EQ((r2.Orig() == Point{ 4, 6, 8 }), true);
+    EXPECT_EQ((r2.getDir() == Vector{ 0, 1, 0 }), true);
+    EXPECT_EQ((r2.getOrig() == Point{ 4, 6, 8 }), true);
 
     m = Matrix<4,4>::identity().scale(2, 3, 4);
     r2 = r.transform(m);
-    EXPECT_EQ((r2.Dir() == Vector{ 0, 3, 0 }), true);
-    EXPECT_EQ((r2.Orig() == Point{ 2, 6, 12 }), true);
+    EXPECT_EQ((r2.getDir() == Vector{ 0, 3, 0 }), true);
+    EXPECT_EQ((r2.getOrig() == Point{ 2, 6, 12 }), true);
 }
 
 TEST(Sphere, transform)
 {
     Sphere s;
     Matrix m_i = Matrix<4,4>::identity();
-    EXPECT_EQ((s.Transform() == m_i), true);
+    EXPECT_EQ((s.getTransform() == m_i), true);
 
     Matrix m = Matrix<4,4>::identity().translate(2, 3, 4);
-    s.Transform(m);
-    EXPECT_EQ((s.Transform() == m), true);
+    s.setTransform(m);
+    EXPECT_EQ((s.getTransform() == m), true);
 }
 
 TEST(Sphere, translated_sphere_with_ray)
 {
     Sphere s;
     Ray r{Point{0, 0, -5}, Vector{0, 0, 1}};
-    s.Transform(Matrix<4,4>::identity().scale(2, 2, 2));
+    s.setTransform(Matrix<4,4>::identity().scale(2, 2, 2));
     std::vector<Intersection> xs = s.intersects(r);
     EXPECT_EQ(xs.size(), 2);
     EXPECT_FLOAT_EQ(xs[0].t, 3);
     EXPECT_FLOAT_EQ(xs[1].t, 7);
 
-    s.Transform(Matrix<4,4>::identity().translate(5, 0, 0));
+    s.setTransform(Matrix<4,4>::identity().translate(5, 0, 0));
     xs = s.intersects(r);
     EXPECT_EQ(xs.size(), 0);
 }
@@ -935,7 +935,7 @@ TEST(Sphere, normals)
 TEST(Sphere, norm_of_translated)
 {
     Sphere s;
-    s.Transform(Matrix<4,4>::identity().translate(0, 1, 0));
+    s.setTransform(Matrix<4,4>::identity().translate(0, 1, 0));
     Vector n = s.normal_at(Point{0, 1.70711, -0.70711});
     EXPECT_LT(n.X() - 0, epsilon);
     EXPECT_LT(n.Y() - 0.70711, epsilon);
@@ -945,7 +945,7 @@ TEST(Sphere, norm_of_translated)
 TEST(Sphere, norm_of_transformed)
 {
     Sphere s;
-    s.Transform(Matrix<4,4>::identity().scale(1, 0.5, 1).rotate_z(PI/5));
+    s.setTransform(Matrix<4,4>::identity().scale(1, 0.5, 1).rotate_z(PI/5));
     Vector n = s.normal_at(Point{0, (float)(sqrt(2)/2), (float)(-sqrt(2)/2)});
     EXPECT_LT(n.X() - 0, epsilon);
     EXPECT_LT(n.Y() - 0.97014, epsilon);
@@ -955,33 +955,33 @@ TEST(Sphere, norm_of_transformed)
 TEST(Sphere, material)
 {
     Sphere s;
-    Material m1 = s.Mat();
+    Material m1 = s.getMaterial();
     Material m2;
 
-    EXPECT_FLOAT_EQ(m1.Ambient(), m2.Ambient());
-    EXPECT_FLOAT_EQ(m1.Diffuse(), m2.Diffuse());
-    EXPECT_FLOAT_EQ(m1.Shininess(), m2.Shininess());
-    EXPECT_FLOAT_EQ(m1.Col().Red(), m2.Col().Red());
-    EXPECT_FLOAT_EQ(m1.Col().Green(), m2.Col().Green());
-    EXPECT_FLOAT_EQ(m1.Col().Blue(), m2.Col().Blue());
+    EXPECT_FLOAT_EQ(m1.getAmbient(), m2.getAmbient());
+    EXPECT_FLOAT_EQ(m1.getDiffuse(), m2.getDiffuse());
+    EXPECT_FLOAT_EQ(m1.getShininess(), m2.getShininess());
+    EXPECT_FLOAT_EQ(m1.getColor().getRed(), m2.getColor().getRed());
+    EXPECT_FLOAT_EQ(m1.getColor().getGreen(), m2.getColor().getGreen());
+    EXPECT_FLOAT_EQ(m1.getColor().getBlue(), m2.getColor().getBlue());
 
     // s can be assigned a material
-    m2.Ambient(1);
-    s.Mat(m2);
-    EXPECT_FLOAT_EQ(s.Mat().Ambient(), 1);
+    m2.setAmbient(1);
+    s.setMaterial(m2);
+    EXPECT_FLOAT_EQ(s.getMaterial().getAmbient(), 1);
 }
 
 TEST(Material, default)
 {
     Material m;
     
-    EXPECT_EQ(m.Col().Red(), 1);
-    EXPECT_EQ(m.Col().Green(), 1);
-    EXPECT_EQ(m.Col().Blue(), 1);
-    EXPECT_FLOAT_EQ(m.Ambient(), 0.1);
-    EXPECT_FLOAT_EQ(m.Diffuse(), 0.9);
-    EXPECT_FLOAT_EQ(m.Specular(), 0.9);
-    EXPECT_FLOAT_EQ(m.Shininess(), 200.0);
+    EXPECT_EQ(m.getColor().getRed(), 1);
+    EXPECT_EQ(m.getColor().getGreen(), 1);
+    EXPECT_EQ(m.getColor().getBlue(), 1);
+    EXPECT_FLOAT_EQ(m.getAmbient(), 0.1);
+    EXPECT_FLOAT_EQ(m.getDiffuse(), 0.9);
+    EXPECT_FLOAT_EQ(m.getSpecular(), 0.9);
+    EXPECT_FLOAT_EQ(m.getShininess(), 200.0);
 }
 
 TEST(Lighting, light_eye_surface)
@@ -993,9 +993,9 @@ TEST(Lighting, light_eye_surface)
     PointLight light = PointLight {Color{1, 1, 1}, Point{0, 0, -10}};
 
     Color result = Lighting::lighting(m, light, position, eyev, normalv);
-    EXPECT_FLOAT_EQ(result.Red(), 1.9);
-    EXPECT_FLOAT_EQ(result.Green(), 1.9);
-    EXPECT_FLOAT_EQ(result.Blue(), 1.9);
+    EXPECT_FLOAT_EQ(result.getRed(), 1.9);
+    EXPECT_FLOAT_EQ(result.getGreen(), 1.9);
+    EXPECT_FLOAT_EQ(result.getBlue(), 1.9);
 }
 
 TEST(Lighting, light_eye_surface_eye_45_degree)
@@ -1007,9 +1007,9 @@ TEST(Lighting, light_eye_surface_eye_45_degree)
     PointLight light = PointLight {Color{1, 1, 1}, Point{0, 0, -10}};
 
     Color result = Lighting::lighting(m, light, position, eyev, normalv);
-    EXPECT_FLOAT_EQ(result.Red(), 1.0);
-    EXPECT_FLOAT_EQ(result.Green(), 1.0);
-    EXPECT_FLOAT_EQ(result.Blue(), 1.0);
+    EXPECT_FLOAT_EQ(result.getRed(), 1.0);
+    EXPECT_FLOAT_EQ(result.getGreen(), 1.0);
+    EXPECT_FLOAT_EQ(result.getBlue(), 1.0);
 }
 
 TEST(Lighting, light_eye_opposite_surface_light_45_degree)
@@ -1021,9 +1021,9 @@ TEST(Lighting, light_eye_opposite_surface_light_45_degree)
     PointLight light = PointLight {Color{1, 1, 1}, Point{0, 10, -10}};
 
     Color result = Lighting::lighting(m, light, position, eyev, normalv);
-    EXPECT_LT(result.Red() - 0.7364, epsilon);
-    EXPECT_LT(result.Green() - 0.7364, epsilon);
-    EXPECT_LT(result.Blue() - 0.7364, epsilon);
+    EXPECT_LT(result.getRed() - 0.7364, epsilon);
+    EXPECT_LT(result.getGreen() - 0.7364, epsilon);
+    EXPECT_LT(result.getBlue() - 0.7364, epsilon);
 }
 
 TEST(Lighting, light_eye_in_path_of_reflection_vector)
@@ -1035,9 +1035,9 @@ TEST(Lighting, light_eye_in_path_of_reflection_vector)
     PointLight light = PointLight {Color{1, 1, 1}, Point{0, 10, -10}};
 
     Color result = Lighting::lighting(m, light, position, eyev, normalv);
-    EXPECT_LT(result.Red() - 1.6364, epsilon);
-    EXPECT_LT(result.Green() - 1.6364, epsilon);
-    EXPECT_LT(result.Blue() - 1.6364, epsilon);
+    EXPECT_LT(result.getRed() - 1.6364, epsilon);
+    EXPECT_LT(result.getGreen() - 1.6364, epsilon);
+    EXPECT_LT(result.getBlue() - 1.6364, epsilon);
 }
 
 TEST(Lighting, light_behind_surface)
@@ -1049,7 +1049,7 @@ TEST(Lighting, light_behind_surface)
     PointLight light = PointLight {Color{1, 1, 1}, Point{0, 0, 10}};
 
     Color result = Lighting::lighting(m, light, position, eyev, normalv);
-    EXPECT_LT(result.Red() - 0.1, epsilon);
-    EXPECT_LT(result.Green() - 0.1, epsilon);
-    EXPECT_LT(result.Blue() - 0.1, epsilon);
+    EXPECT_LT(result.getRed() - 0.1, epsilon);
+    EXPECT_LT(result.getGreen() - 0.1, epsilon);
+    EXPECT_LT(result.getBlue() - 0.1, epsilon);
 }
