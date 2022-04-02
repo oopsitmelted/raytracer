@@ -781,14 +781,14 @@ TEST(Ray, sphereintersect)
 
     std::vector<Intersection> xs = s.intersects(r);
     EXPECT_EQ(xs.size(), 2);
-    EXPECT_FLOAT_EQ(xs[0].t, 4);
-    EXPECT_FLOAT_EQ(xs[1].t, 6);
+    EXPECT_FLOAT_EQ(xs[0].getT(), 4);
+    EXPECT_FLOAT_EQ(xs[1].getT(), 6);
 
     r = Ray{ Point{0, 1, -5}, Vector{0, 0, 1} };
     xs = s.intersects(r);
     EXPECT_EQ(xs.size(), 2);
-    EXPECT_FLOAT_EQ(xs[0].t, 5);
-    EXPECT_FLOAT_EQ(xs[1].t, 5);
+    EXPECT_FLOAT_EQ(xs[0].getT(), 5);
+    EXPECT_FLOAT_EQ(xs[1].getT(), 5);
 
     r = Ray{ Point{0, 2, -5}, Vector{0, 0, 1} };
     xs = s.intersects(r);
@@ -797,21 +797,21 @@ TEST(Ray, sphereintersect)
     r = Ray{ Point{0, 0, 0}, Vector{0, 0, 1} };
     xs = s.intersects(r);
     EXPECT_EQ(xs.size(), 2);
-    EXPECT_FLOAT_EQ(xs[0].t, -1);
-    EXPECT_FLOAT_EQ(xs[1].t, 1);
+    EXPECT_FLOAT_EQ(xs[0].getT(), -1);
+    EXPECT_FLOAT_EQ(xs[1].getT(), 1);
 
     r = Ray{ Point{0, 0, 5}, Vector{0, 0, 1} };
     xs = s.intersects(r);
     EXPECT_EQ(xs.size(), 2);
-    EXPECT_FLOAT_EQ(xs[0].t, -6);
-    EXPECT_FLOAT_EQ(xs[1].t, -4);
+    EXPECT_FLOAT_EQ(xs[0].getT(), -6);
+    EXPECT_FLOAT_EQ(xs[1].getT(), -4);
 }
 
 TEST(Ray, intersection)
 {
     Sphere s;
-    Intersection i{ 3.5, s };
-    EXPECT_EQ(&s, &i.object);
+    Intersection i{ 3.5, &s };
+    EXPECT_EQ(&s, i.getShape());
 }
 
 TEST(Ray, intersections)
@@ -821,40 +821,40 @@ TEST(Ray, intersections)
 
     std::vector<Intersection> xs = s.intersects(r);
     EXPECT_EQ(xs.size(), 2);
-    EXPECT_EQ(&xs[0].object, &s);
-    EXPECT_EQ(&xs[1].object, &s);
+    EXPECT_EQ(xs[0].getShape(), &s);
+    EXPECT_EQ(xs[1].getShape(), &s);
 }
 
 TEST(Ray, hit)
 {
     Sphere s;
-    Intersection i1{ 1,s };
-    Intersection i2{ 2,s };
+    Intersection i1{ 1,&s };
+    Intersection i2{ 2,&s };
     std::vector<Intersection> xs = {i1 ,i2};
     Intersections is{xs};
     std::optional<Intersection> hit = is.hit();
     EXPECT_EQ((hit ? true : false), true);
-    EXPECT_EQ((*hit == i1), true);
+    EXPECT_EQ(*hit == i1, true);
 
-    i1 = Intersection{ -1, s };
-    i2 = Intersection{ 1, s };
+    i1 = Intersection{ -1, &s };
+    i2 = Intersection{ 1, &s };
     xs = { i1 ,i2 };
     is = Intersections{xs};
     hit = is.hit();
     EXPECT_EQ((hit ? true : false), true);
     EXPECT_EQ((*hit == i2), true);
 
-    i1 = Intersection{ -2, s };
-    i2 = Intersection{ -1, s };
+    i1 = Intersection{ -2, &s };
+    i2 = Intersection{ -1, &s };
     xs = { i1 ,i2 };
     is = Intersections{xs};
     hit = is.hit();
     EXPECT_EQ((hit ? true : false), false);
 
-    i1 = Intersection{ 5, s };
-    i2 = Intersection{ 7, s };
-    Intersection i3{ -3, s };
-    Intersection i4{ 2, s };
+    i1 = Intersection{ 5, &s };
+    i2 = Intersection{ 7, &s };
+    Intersection i3{ -3, &s };
+    Intersection i4{ 2, &s };
     xs = { i1 ,i2, i3, i4 };
     is = Intersections{xs};
     hit = is.hit();
@@ -895,8 +895,8 @@ TEST(Sphere, translated_sphere_with_ray)
     s.setTransform(Matrix<4,4>::identity().scale(2, 2, 2));
     std::vector<Intersection> xs = s.intersects(r);
     EXPECT_EQ(xs.size(), 2);
-    EXPECT_FLOAT_EQ(xs[0].t, 3);
-    EXPECT_FLOAT_EQ(xs[1].t, 7);
+    EXPECT_FLOAT_EQ(xs[0].getT(), 3);
+    EXPECT_FLOAT_EQ(xs[1].getT(), 7);
 
     s.setTransform(Matrix<4,4>::identity().translate(5, 0, 0));
     xs = s.intersects(r);

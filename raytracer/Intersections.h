@@ -19,7 +19,7 @@ public:
 
 		auto sortRuleLambda = [](Intersection const& i1, Intersection const& i2) -> bool
 		{
-			return i1.t < i2.t;
+			return i1.getT() < i2.getT();
 		};
 
 		std::sort(intersections.begin(), intersections.end(), sortRuleLambda);
@@ -29,7 +29,7 @@ public:
 	{
 		for (auto i : intersections)
 		{
-			if (i.t >= 0)
+			if (i.getT() >= 0)
 				return i;
 		}
 		return std::nullopt;

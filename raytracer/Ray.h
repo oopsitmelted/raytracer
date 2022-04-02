@@ -3,7 +3,6 @@
 #include "Vector.h"
 #include "Point.h"
 #include "Matrix.h"
-#include "Intersection.h"
 #include <vector>
 #include <optional>
 

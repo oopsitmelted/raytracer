@@ -9,20 +9,14 @@
 class Sphere : public Shape
 {
 private:
-	Matrix<4,4> transform;
 	Point origin;
 	float radius;
-	Material material;
-public:
-	Sphere() : origin(0, 0, 0), radius(1), transform(Matrix<4,4>::identity()), material(Material{}) {};
 
-	const Matrix<4,4>& getTransform() const {return transform;};
+public:
+	Sphere() : origin(0, 0, 0), radius(1){};
+
 	const Point& getOrigin() const {return origin;};
 	const float& getRadius() const {return radius;};
-	const Material& getMaterial() const {return material;};
-
-	void setTransform(Matrix<4,4> t){transform = t;};
-	void setMaterial(Material m) {material = m;};
 
 	std::vector<Intersection> intersects(Ray& r)
 	{
@@ -40,10 +34,10 @@ public:
 			return i;
 		}
 
-		i.push_back(Intersection{ (-b - sqrt(d)) / (2 * a), *this });
-		i.push_back(Intersection{ (-b + sqrt(d)) / (2 * a), *this });
+		i.push_back(Intersection{ (-b - sqrt(d)) / (2 * a), this });
+		i.push_back(Intersection{ (-b + sqrt(d)) / (2 * a), this });
 
-		if (i[0].t > i[1].t) // ensure sorted
+		if (i[0].getT() > i[1].getT()) // ensure sorted
 		{
 			Intersection temp = i[1];
 			i[1] = i[0];

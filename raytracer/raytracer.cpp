@@ -155,7 +155,7 @@ void renderSphere3D()
             std::optional<Intersection> hit = Intersections{xs}.hit();
             if (hit)
             {
-                Point point = r.position(hit->t);
+                Point point = r.position(hit->getT());
                 Vector normal = s.normal_at(point);
                 Vector eye = Vector{0,0,0} - r.getDir();
                 Color color = Lighting::lighting(s.getMaterial(), light, point, eye, normal);

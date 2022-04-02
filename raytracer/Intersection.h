@@ -1,25 +1,30 @@
 #pragma once
 #include "Shape.h"
 
+class Shape;
+
 class Intersection
 {
-public:
+private:
 	float t;
-	Shape& object;
-	Intersection(float t, Shape& object) : t(t), object(object) {};
-	Intersection(const Intersection& i) : t(i.t), object(i.object) {};
+	Shape *shape;
+public:
+	Intersection(float t, Shape* shape) : t(t), shape(shape) {};
+	Intersection(const Intersection& i) : t(i.t), shape(i.shape) {};
 
+	float getT() const {return t;};
+	Shape* getShape() const{return shape;};
 	Intersection& operator=(Intersection i)
 	{
 		t = i.t;
-		object = i.object;
+		shape = i.shape;
 
 		return *this;
 	}
 
 	bool operator==(Intersection& i)
 	{
-		return (t == i.t && &object == &i.object);
+		return (t == i.t && shape == i.shape);
 	}
 };
 
