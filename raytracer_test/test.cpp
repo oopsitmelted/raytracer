@@ -779,29 +779,29 @@ TEST(Ray, sphereintersect)
     Sphere s;
     Ray r{ Point{0,0,-5}, Vector{0,0,1} };
 
-    std::vector<Intersection> xs = s.intersects(r);
+    std::vector<Intersection> xs = r.intersects(s);
     EXPECT_EQ(xs.size(), 2);
     EXPECT_FLOAT_EQ(xs[0].getT(), 4);
     EXPECT_FLOAT_EQ(xs[1].getT(), 6);
 
     r = Ray{ Point{0, 1, -5}, Vector{0, 0, 1} };
-    xs = s.intersects(r);
+    xs = r.intersects(s);
     EXPECT_EQ(xs.size(), 2);
     EXPECT_FLOAT_EQ(xs[0].getT(), 5);
     EXPECT_FLOAT_EQ(xs[1].getT(), 5);
 
     r = Ray{ Point{0, 2, -5}, Vector{0, 0, 1} };
-    xs = s.intersects(r);
+    xs = r.intersects(s);
     EXPECT_EQ(xs.size(), 0);
 
     r = Ray{ Point{0, 0, 0}, Vector{0, 0, 1} };
-    xs = s.intersects(r);
+    xs = r.intersects(s);
     EXPECT_EQ(xs.size(), 2);
     EXPECT_FLOAT_EQ(xs[0].getT(), -1);
     EXPECT_FLOAT_EQ(xs[1].getT(), 1);
 
     r = Ray{ Point{0, 0, 5}, Vector{0, 0, 1} };
-    xs = s.intersects(r);
+    xs = r.intersects(s);
     EXPECT_EQ(xs.size(), 2);
     EXPECT_FLOAT_EQ(xs[0].getT(), -6);
     EXPECT_FLOAT_EQ(xs[1].getT(), -4);
@@ -819,7 +819,7 @@ TEST(Ray, intersections)
     Sphere s;
     Ray r{ Point{0, 0, -5}, Vector{0, 0, 1} };
 
-    std::vector<Intersection> xs = s.intersects(r);
+    std::vector<Intersection> xs = r.intersects(s);
     EXPECT_EQ(xs.size(), 2);
     EXPECT_EQ(xs[0].getShape(), &s);
     EXPECT_EQ(xs[1].getShape(), &s);
@@ -893,13 +893,13 @@ TEST(Sphere, translated_sphere_with_ray)
     Sphere s;
     Ray r{Point{0, 0, -5}, Vector{0, 0, 1}};
     s.setTransform(Matrix<4,4>::identity().scale(2, 2, 2));
-    std::vector<Intersection> xs = s.intersects(r);
+    std::vector<Intersection> xs = r.intersects(s);
     EXPECT_EQ(xs.size(), 2);
     EXPECT_FLOAT_EQ(xs[0].getT(), 3);
     EXPECT_FLOAT_EQ(xs[1].getT(), 7);
 
     s.setTransform(Matrix<4,4>::identity().translate(5, 0, 0));
-    xs = s.intersects(r);
+    xs = r.intersects(s);
     EXPECT_EQ(xs.size(), 0);
 }
 
@@ -1052,4 +1052,41 @@ TEST(Lighting, light_behind_surface)
     EXPECT_LT(result.getRed() - 0.1, epsilon);
     EXPECT_LT(result.getGreen() - 0.1, epsilon);
     EXPECT_LT(result.getBlue() - 0.1, epsilon);
+}
+
+TEST(Shape, test_shape)
+{
+    TestShape s;
+    Matrix<4,4> m = s.getTransform();
+    EXPECT_EQ((Matrix<4,4>::identity() == m), true);
+
+    s.setTransform(Matrix<4,4>::identity().translate(2,3,4));
+    Matrix<4,4> transform = s.getTransform();
+    m = Matrix<4,4>::identity().translate(2,3,4);
+    EXPECT_EQ(m == transform, true);
+
+    Material material1 = s.getMaterial();
+    Material material2;
+    EXPECT_EQ(material1.getAmbient() == material2.getAmbient(), true);
+    EXPECT_EQ(material1.getColor().getBlue() == material2.getColor().getBlue(), true);
+    EXPECT_EQ(material1.getColor().getGreen() == material2.getColor().getGreen(), true);
+    EXPECT_EQ(material1.getColor().getRed() == material2.getColor().getRed(), true);
+    EXPECT_EQ(material1.getDiffuse() == material2.getDiffuse(), true);
+    EXPECT_EQ(material1.getShininess() == material2.getShininess(), true);
+    EXPECT_EQ(material1.getSpecular() == material2.getSpecular(), true);
+
+    material2.setAmbient(1);
+    s.setMaterial(material2);
+    EXPECT_EQ(s.getMaterial().getAmbient(), 1);
+}
+
+TEST(Shape, test_shape_intersection)
+{
+    TestShape s;
+    Ray r {Point{0,0,-5,}, Vector{0,0,1}};
+
+    s.setTransform(Matrix<4,4>::identity().scale(2,2,2));
+    std::vector<Intersection> xs = r.intersects(s);
+    EXPECT_EQ((s.getSavedRay().getOrig() == Point{0,0,-2.5}), true);
+    EXPECT_EQ((s.getSavedRay().getDir() == Vector{0,0,0.5}), true);
 }

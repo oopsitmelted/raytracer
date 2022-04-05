@@ -104,7 +104,7 @@ void renderSphere2D()
             Point pos = Point{world_x, world_y, wall_z};
             Ray r = Ray{ray_origin, (pos - ray_origin).norm()};
 
-            std::vector<Intersection> xs = s.intersects(r);
+            std::vector<Intersection> xs = r.intersects(s);
 
             if (Intersections{xs}.hit())
             {
@@ -150,7 +150,7 @@ void renderSphere3D()
             Point pos = Point{world_x, world_y, wall_z};
             Ray r = Ray{ray_origin, (pos - ray_origin).norm()};
 
-            std::vector<Intersection> xs = s.intersects(r);
+            std::vector<Intersection> xs = r.intersects(s);
 
             std::optional<Intersection> hit = Intersections{xs}.hit();
             if (hit)

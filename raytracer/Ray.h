@@ -3,8 +3,11 @@
 #include "Vector.h"
 #include "Point.h"
 #include "Matrix.h"
+#include "Intersection.h"
 #include <vector>
 #include <optional>
+
+class Shape;
 
 class Ray
 {
@@ -19,6 +22,7 @@ public:
 
 	const Point& getOrig(){return orig;};
 	void setOrig(Point& o){orig = o;};
+	std::vector<Intersection> intersects(Shape& r);
 
 	Point position(float t)
 	{
