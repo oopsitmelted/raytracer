@@ -1,7 +1,7 @@
 #include "Sphere.h"
 #include "Ray.h"
 
-	std::vector<Intersection> Sphere::intersects(Ray& r)
+	std::vector<Intersection> Sphere::_intersects(Ray& r)
 	{
 		std::vector<Intersection> i;
 		Vector sphere_to_ray = r.getOrig() - origin;

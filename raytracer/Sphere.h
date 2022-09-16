@@ -19,7 +19,7 @@ public:
 	const Point& getOrigin() const {return origin;};
 	const float& getRadius() const {return radius;};
 
-	std::vector<Intersection> intersects(Ray& r);
+	std::vector<Intersection> _intersects(Ray& r);
 
 	Vector normal_at(Point world_point)
 	{

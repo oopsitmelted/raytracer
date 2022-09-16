@@ -19,7 +19,7 @@ public:
 	const Material& getMaterial() const {return material;};
 	void setTransform(Matrix<4,4> t){transform = t;};
 	void setMaterial(Material m) {material = m;};
-	virtual std::vector<Intersection> intersects(Ray& r) = 0;
+	virtual std::vector<Intersection> _intersects(Ray& r) = 0;
 };
 
 class TestShape : public Shape
@@ -28,7 +28,7 @@ private:
 	Ray saved_ray;
 public:
 	TestShape() : saved_ray(Ray(Point{0,0,0}, Vector{0,0,0})) {};
-	std::vector<Intersection> intersects(Ray& r)
+	std::vector<Intersection> _intersects(Ray& r)
 	{ 
 		saved_ray = r;
 		return std::vector<Intersection>();
