@@ -17,16 +17,9 @@ enable_testing()
 
 set(common_source
   raytracer/Canvas.cpp
-  raytracer/Color.cpp
-  raytracer/Intersection.cpp
-  raytracer/Matrix.cpp
-  raytracer/Point.cpp
+  raytracer/Lighting.cpp
   raytracer/Ray.cpp
-  raytracer/Shape.cpp
   raytracer/Sphere.cpp
-  raytracer/Tuple.cpp
-  raytracer/Vector.cpp
-  raytracer/PointLight.cpp
 )
 
 add_executable(
