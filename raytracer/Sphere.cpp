@@ -1,3 +1,4 @@
+#include <memory>
 #include "Sphere.h"
 #include "Ray.h"
 
@@ -13,8 +14,8 @@ std::vector<Intersection> Sphere::_intersects(Ray& r)
 	{
 		return i;
 	}
-	i.push_back(Intersection{ (-b - sqrt(d)) / (2 * a), this });
-	i.push_back(Intersection{ (-b + sqrt(d)) / (2 * a), this });
+	i.push_back(Intersection{ (-b - sqrt(d)) / (2 * a), shared_from_this() });
+	i.push_back(Intersection{ (-b + sqrt(d)) / (2 * a), shared_from_this() });
 	if (i[0].getT() > i[1].getT()) // ensure sorted
 	{
 		Intersection temp = i[1];

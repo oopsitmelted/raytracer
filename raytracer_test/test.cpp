@@ -18,6 +18,7 @@
 #include "../raytracer/PointLight.h"
 #include "../raytracer/Lighting.h"
 #include "../raytracer/World.h"
+#include "../raytracer/RayComputations.h"
 
 constexpr float epsilon = 0.00001f;
 
@@ -778,7 +779,7 @@ TEST(Ray, position)
 
 TEST(Ray, sphereintersect)
 {
-    Sphere s;
+    std::shared_ptr<Sphere> s(new Sphere());
     Ray r{ Point{0,0,-5}, Vector{0,0,1} };
 
     std::vector<Intersection> xs = r.intersects(s);
@@ -811,52 +812,52 @@ TEST(Ray, sphereintersect)
 
 TEST(Ray, intersection)
 {
-    Sphere s;
-    Intersection i{ 3.5, &s };
-    EXPECT_EQ(&s, i.getShape());
+    std::shared_ptr<Sphere> s(new Sphere());
+    Intersection i{ 3.5, s};
+    EXPECT_EQ(s, i.getShape());
 }
 
 TEST(Ray, intersections)
 {
-    Sphere s;
+    std::shared_ptr<Sphere> s(new Sphere());
     Ray r{ Point{0, 0, -5}, Vector{0, 0, 1} };
 
     std::vector<Intersection> xs = r.intersects(s);
     EXPECT_EQ(xs.size(), 2);
-    EXPECT_EQ(xs[0].getShape(), &s);
-    EXPECT_EQ(xs[1].getShape(), &s);
+    EXPECT_EQ(xs[0].getShape(), s);
+    EXPECT_EQ(xs[1].getShape(), s);
 }
 
 TEST(Ray, hit)
 {
-    Sphere s;
-    Intersection i1{ 1,&s };
-    Intersection i2{ 2,&s };
+    std::shared_ptr<Sphere> s(new Sphere());
+    Intersection i1{ 1,s };
+    Intersection i2{ 2,s };
     std::vector<Intersection> xs = {i1 ,i2};
     Intersections is{xs};
     std::optional<Intersection> hit = is.hit();
     EXPECT_EQ((hit ? true : false), true);
     EXPECT_EQ(*hit == i1, true);
 
-    i1 = Intersection{ -1, &s };
-    i2 = Intersection{ 1, &s };
+    i1 = Intersection{ -1, s };
+    i2 = Intersection{ 1, s };
     xs = { i1 ,i2 };
     is = Intersections{xs};
     hit = is.hit();
     EXPECT_EQ((hit ? true : false), true);
     EXPECT_EQ((*hit == i2), true);
 
-    i1 = Intersection{ -2, &s };
-    i2 = Intersection{ -1, &s };
+    i1 = Intersection{ -2, s };
+    i2 = Intersection{ -1, s };
     xs = { i1 ,i2 };
     is = Intersections{xs};
     hit = is.hit();
     EXPECT_EQ((hit ? true : false), false);
 
-    i1 = Intersection{ 5, &s };
-    i2 = Intersection{ 7, &s };
-    Intersection i3{ -3, &s };
-    Intersection i4{ 2, &s };
+    i1 = Intersection{ 5, s };
+    i2 = Intersection{ 7, s };
+    Intersection i3{ -3, s };
+    Intersection i4{ 2, s };
     xs = { i1 ,i2, i3, i4 };
     is = Intersections{xs};
     hit = is.hit();
@@ -892,15 +893,15 @@ TEST(Sphere, transform)
 
 TEST(Sphere, translated_sphere_with_ray)
 {
-    Sphere s;
+    std::shared_ptr<Sphere> s(new Sphere());
     Ray r{Point{0, 0, -5}, Vector{0, 0, 1}};
-    s.setTransform(Matrix<4,4>::identity().scale(2, 2, 2));
+    s->setTransform(Matrix<4,4>::identity().scale(2, 2, 2));
     std::vector<Intersection> xs = r.intersects(s);
     EXPECT_EQ(xs.size(), 2);
     EXPECT_FLOAT_EQ(xs[0].getT(), 3);
     EXPECT_FLOAT_EQ(xs[1].getT(), 7);
 
-    s.setTransform(Matrix<4,4>::identity().translate(5, 0, 0));
+    s->setTransform(Matrix<4,4>::identity().translate(5, 0, 0));
     xs = r.intersects(s);
     EXPECT_EQ(xs.size(), 0);
 }
@@ -1084,13 +1085,13 @@ TEST(Shape, test_shape)
 
 TEST(Shape, test_shape_intersection)
 {
-    TestShape s;
+    std::shared_ptr<TestShape> s(new TestShape());
     Ray r {Point{0,0,-5,}, Vector{0,0,1}};
 
-    s.setTransform(Matrix<4,4>::identity().scale(2,2,2));
+    s->setTransform(Matrix<4,4>::identity().scale(2,2,2));
     std::vector<Intersection> xs = r.intersects(s);
-    EXPECT_EQ((s.getSavedRay().getOrig() == Point{0,0,-2.5}), true);
-    EXPECT_EQ((s.getSavedRay().getDir() == Vector{0,0,0.5}), true);
+    EXPECT_EQ((s->getSavedRay().getOrig() == Point{0,0,-2.5}), true);
+    EXPECT_EQ((s->getSavedRay().getDir() == Vector{0,0,0.5}), true);
 }
 
 TEST(World, create_world)
@@ -1111,14 +1112,14 @@ TEST(World, default_world)
 
     EXPECT_EQ(w.shapes.size(), 2);
     
-    std::unique_ptr<Shape> s = std::move(w.shapes[0]);
+    std::shared_ptr<Shape> s = w.shapes[0];
     Material m = s->getMaterial();
     Color c = m.getColor();
     EXPECT_LT(c.getRed() - 0.8, epsilon);
     EXPECT_LT(c.getGreen() - 1.0, epsilon);
     EXPECT_LT(c.getBlue() - 0.6, epsilon);
 
-    s = std::move(w.shapes[1]);
+    s = w.shapes[1];
     Matrix<4,4> t1 = Matrix<4,4>::identity();
     t1 = t1.scale(0.5,0.5,0.5);
     Matrix<4,4> t2 = s->getTransform();
@@ -1137,4 +1138,18 @@ TEST(World, intersect_world)
     EXPECT_EQ(points[1].getT(),4.5);
     EXPECT_EQ(points[2].getT(),5.5);
     EXPECT_EQ(points[3].getT(),6);
+}
+
+TEST(World, precompute_intersection)
+{
+    Ray r(Point(0,0,-5), Vector(0,0,1));
+    std::shared_ptr<Sphere> s(new Sphere());
+    Intersection i(4, s);
+    RayComputations c = r.prepareComputations(i);
+
+    EXPECT_EQ(i.getT(), c.t);
+    EXPECT_EQ(c.shape, i.getShape());
+    EXPECT_EQ(c.point == Point(0,0,-1), true);
+    EXPECT_EQ(c.eyev == Vector(0,0,-1), true);
+    EXPECT_EQ(c.normalv == Vector(0,0,-1), true);
 }

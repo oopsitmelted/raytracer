@@ -4,8 +4,10 @@
 #include "Point.h"
 #include "Matrix.h"
 #include "Intersection.h"
+#include "RayComputations.h"
 #include <vector>
 #include <optional>
+#include <memory>
 
 class Shape;
 
@@ -22,7 +24,8 @@ public:
 
 	const Point& getOrig(){return orig;};
 	void setOrig(Point& o){orig = o;};
-	std::vector<Intersection> intersects(Shape& r);
+	std::vector<Intersection> intersects(std::shared_ptr<Shape> r);
+	RayComputations prepareComputations(Intersection& i);
 
 	Point position(float t)
 	{

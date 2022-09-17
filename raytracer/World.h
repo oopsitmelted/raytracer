@@ -15,7 +15,6 @@ public:
     World(){} ;
     static World defaultWorld();
     Intersections intersect_world(Ray& r);
-    std::vector<std::unique_ptr<Shape>> shapes;
+    std::vector<std::shared_ptr<Shape>> shapes;
     std::unique_ptr<PointLight> light;
-
 };

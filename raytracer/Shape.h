@@ -8,7 +8,7 @@
 
 class Intersection;
 
-class Shape
+class Shape : public std::enable_shared_from_this<Shape>
 {
 protected:
 	Matrix<4,4> transform;
@@ -21,6 +21,7 @@ public:
 	void setTransform(Matrix<4,4> t){transform = t;};
 	void setMaterial(Material m) {material = m;};
 	virtual std::vector<Intersection> _intersects(Ray& r) = 0;
+	virtual Vector normal_at(Point world_point) = 0;
 };
 
 class TestShape : public Shape
@@ -35,4 +36,5 @@ public:
 		return std::vector<Intersection>();
 	};
 	Ray getSavedRay() const {return saved_ray;};
+	Vector normal_at(Point world_point){return Vector(0,0,0);}
 };
