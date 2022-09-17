@@ -2,6 +2,7 @@
 #include <cmath>
 #include <iostream>
 #include <sstream>
+#include <memory>
 #include "../raytracer/Tuple.h"
 #include "../raytracer/Point.h"
 #include "../raytracer/Vector.h"
@@ -16,6 +17,7 @@
 #include "../raytracer/Material.h"
 #include "../raytracer/PointLight.h"
 #include "../raytracer/Lighting.h"
+#include "../raytracer/World.h"
 
 constexpr float epsilon = 0.00001f;
 
@@ -1089,4 +1091,50 @@ TEST(Shape, test_shape_intersection)
     std::vector<Intersection> xs = r.intersects(s);
     EXPECT_EQ((s.getSavedRay().getOrig() == Point{0,0,-2.5}), true);
     EXPECT_EQ((s.getSavedRay().getDir() == Vector{0,0,0.5}), true);
+}
+
+TEST(World, create_world)
+{
+    World w;
+    EXPECT_EQ(w.shapes.size(), 0);
+    EXPECT_EQ(w.light, nullptr);
+}
+
+TEST(World, default_world)
+{
+    World w = World::defaultWorld();
+
+    Point p = w.light->getPos();
+    EXPECT_EQ(p.X(), -10);
+    EXPECT_EQ(p.Y(), 10);
+    EXPECT_EQ(p.Z(), -10);
+
+    EXPECT_EQ(w.shapes.size(), 2);
+    
+    std::unique_ptr<Shape> s = std::move(w.shapes[0]);
+    Material m = s->getMaterial();
+    Color c = m.getColor();
+    EXPECT_LT(c.getRed() - 0.8, epsilon);
+    EXPECT_LT(c.getGreen() - 1.0, epsilon);
+    EXPECT_LT(c.getBlue() - 0.6, epsilon);
+
+    s = std::move(w.shapes[1]);
+    Matrix<4,4> t1 = Matrix<4,4>::identity();
+    t1 = t1.scale(0.5,0.5,0.5);
+    Matrix<4,4> t2 = s->getTransform();
+    EXPECT_EQ(t1 == t2, true);
+}
+
+TEST(World, intersect_world)
+{
+    World w = World::defaultWorld();
+    Ray r{Point{0,0,-5},Vector{0,0,1}};
+
+    Intersections i = w.intersect_world(r);
+    std::vector<Intersection> points = i.points();
+    EXPECT_EQ(i.count(), 4);
+    EXPECT_EQ(points[0].getT(),4);
+    EXPECT_EQ(points[1].getT(),4.5);
+    EXPECT_EQ(points[2].getT(),5.5);
+    EXPECT_EQ(points[3].getT(),6);
 }

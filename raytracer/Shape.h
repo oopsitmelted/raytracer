@@ -15,6 +15,7 @@ protected:
 	Material material;
 public:
 	Shape() : transform(Matrix<4,4>::identity()), material(Material{}) {};
+	virtual ~Shape() = default;
 	const Matrix<4,4>& getTransform() const {return transform;};
 	const Material& getMaterial() const {return material;};
 	void setTransform(Matrix<4,4> t){transform = t;};

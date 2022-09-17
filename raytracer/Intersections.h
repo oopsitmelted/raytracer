@@ -10,7 +10,6 @@ private:
     std::vector<Intersection> intersections;
 
 public:
-    
 	Intersections(std::vector<Intersection> i) {
 		for (auto x : i)
 		{
@@ -25,6 +24,8 @@ public:
 		std::sort(intersections.begin(), intersections.end(), sortRuleLambda);
     };
 
+	int count() {return intersections.size();};
+	std::vector<Intersection> points(){return intersections;};
 	std::optional<Intersection> hit()
 	{
 		for (auto i : intersections)

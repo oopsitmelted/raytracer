@@ -20,6 +20,7 @@ set(common_source
   raytracer/Lighting.cpp
   raytracer/Ray.cpp
   raytracer/Sphere.cpp
+  raytracer/World.cpp
 )
 
 add_executable(
