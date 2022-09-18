@@ -3,6 +3,7 @@
 #include <vector>
 #include <limits>
 #include <optional>
+#include <algorithm>
 
 class Intersections
 {
@@ -24,7 +25,7 @@ public:
 		std::sort(intersections.begin(), intersections.end(), sortRuleLambda);
     };
 
-	int count() {return intersections.size();};
+	int count() {return static_cast<int>(intersections.size());};
 	std::vector<Intersection> points(){return intersections;};
 	std::optional<Intersection> hit()
 	{

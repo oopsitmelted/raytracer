@@ -125,12 +125,12 @@ public:
 		assert(row < ROWS && col < COLS);
 		Matrix<ROWS-1, COLS-1> dest;
 
-		for (int r = 0; r < ROWS; r++)
+		for (unsigned int r = 0; r < ROWS; r++)
 		{
 			if (r == row)
 				continue;
 
-			for (int c = 0; c < COLS; c++)
+			for (unsigned int c = 0; c < COLS; c++)
 			{
 				if (c == col)
 					continue;

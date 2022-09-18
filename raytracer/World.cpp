@@ -8,9 +8,9 @@ World World::defaultWorld()
     World w;
     std::shared_ptr<Sphere> s1(new Sphere());
     Material m = s1->getMaterial();
-    m.setColor(Color(0.8, 1.0, 0.6));
-    m.setDiffuse(0.7);
-    m.setSpecular(0.2);
+    m.setColor(Color(0.8f, 1.0f, 0.6f));
+    m.setDiffuse(0.7f);
+    m.setSpecular(0.2f);
     s1->setMaterial(m);
     w.shapes.push_back(s1);
     std::shared_ptr<Sphere> s2(new Sphere());
