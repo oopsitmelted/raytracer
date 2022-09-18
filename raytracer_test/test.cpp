@@ -20,8 +20,6 @@
 #include "../raytracer/World.h"
 #include "../raytracer/RayComputations.h"
 
-constexpr float epsilon = 0.00001f;
-
 TEST(Tuple, createtuple) 
 {
     Tuple t {4.3f, -4.2f, 3.1f, 1.0f};
@@ -182,9 +180,9 @@ TEST(Vector, reflect)
     v = Vector{0, -1, 0};
     n = Vector{(float)(sqrt(2)/2), (float)(sqrt(2)/2), 0};
     r = v.reflect(n);
-    EXPECT_LT(r.X() - 1, epsilon);
-    EXPECT_LT(r.Y() - 0, epsilon);
-    EXPECT_LT(r.Z() - 0, epsilon);
+    EXPECT_LT(abs(r.X() - 1), epsilon);
+    EXPECT_LT(abs(r.Y() - 0), epsilon);
+    EXPECT_LT(abs(r.Z() - 0), epsilon);
 }
 
 TEST(Color, constructor)
@@ -940,19 +938,20 @@ TEST(Sphere, norm_of_translated)
     Sphere s;
     s.setTransform(Matrix<4,4>::identity().translate(0, 1, 0));
     Vector n = s.normal_at(Point{0, 1.70711, -0.70711});
-    EXPECT_LT(n.X() - 0, epsilon);
-    EXPECT_LT(n.Y() - 0.70711, epsilon);
-    EXPECT_LT(n.Z() - -0.70711, epsilon);
+    EXPECT_LT(abs(n.X() - 0), epsilon);
+    EXPECT_LT(abs(n.Y() - 0.70711), epsilon);
+    EXPECT_LT(abs(n.Z() - -0.70711), epsilon);
 }
 
 TEST(Sphere, norm_of_transformed)
 {
     Sphere s;
-    s.setTransform(Matrix<4,4>::identity().scale(1, 0.5, 1).rotate_z(PI/5));
+    Matrix<4,4> rotate_z = Matrix<4,4>::identity().rotate_z(PI/5);
+    s.setTransform(Matrix<4,4>::identity().scale(1, 0.5, 1) * rotate_z);
     Vector n = s.normal_at(Point{0, (float)(sqrt(2)/2), (float)(-sqrt(2)/2)});
-    EXPECT_LT(n.X() - 0, epsilon);
-    EXPECT_LT(n.Y() - 0.97014, epsilon);
-    EXPECT_LT(n.Z() - -0.24254, epsilon);
+    EXPECT_LT(abs(n.X() - 0), epsilon);
+    EXPECT_LT(abs(n.Y() - 0.97014), epsilon);
+    EXPECT_LT(abs(n.Z() - -0.24254), epsilon);
 }
 
 TEST(Sphere, material)
@@ -1024,23 +1023,23 @@ TEST(Lighting, light_eye_opposite_surface_light_45_degree)
     PointLight light = PointLight {Color{1, 1, 1}, Point{0, 10, -10}};
 
     Color result = Lighting::lighting(m, light, position, eyev, normalv);
-    EXPECT_LT(result.getRed() - 0.7364, epsilon);
-    EXPECT_LT(result.getGreen() - 0.7364, epsilon);
-    EXPECT_LT(result.getBlue() - 0.7364, epsilon);
+    EXPECT_LT(abs(result.getRed() - 0.7364), epsilon);
+    EXPECT_LT(abs(result.getGreen() - 0.7364), epsilon);
+    EXPECT_LT(abs(result.getBlue() - 0.7364), epsilon);
 }
 
 TEST(Lighting, light_eye_in_path_of_reflection_vector)
 {
     Material m;
     Point position {0, 0, 0};
-    Vector eyev = Vector {0, ((float)sqrt(2))/2, -((float)sqrt(2))/2}; 
+    Vector eyev = Vector {0, -((float)sqrt(2))/2, -((float)sqrt(2))/2}; 
     Vector normalv = Vector {0, 0, -1};
     PointLight light = PointLight {Color{1, 1, 1}, Point{0, 10, -10}};
 
     Color result = Lighting::lighting(m, light, position, eyev, normalv);
-    EXPECT_LT(result.getRed() - 1.6364, epsilon);
-    EXPECT_LT(result.getGreen() - 1.6364, epsilon);
-    EXPECT_LT(result.getBlue() - 1.6364, epsilon);
+    EXPECT_LT(abs(result.getRed() - 1.6364), epsilon);
+    EXPECT_LT(abs(result.getGreen() - 1.6364), epsilon);
+    EXPECT_LT(abs(result.getBlue() - 1.6364), epsilon);
 }
 
 TEST(Lighting, light_behind_surface)
@@ -1052,9 +1051,9 @@ TEST(Lighting, light_behind_surface)
     PointLight light = PointLight {Color{1, 1, 1}, Point{0, 0, 10}};
 
     Color result = Lighting::lighting(m, light, position, eyev, normalv);
-    EXPECT_LT(result.getRed() - 0.1, epsilon);
-    EXPECT_LT(result.getGreen() - 0.1, epsilon);
-    EXPECT_LT(result.getBlue() - 0.1, epsilon);
+    EXPECT_LT(abs(result.getRed() - 0.1), epsilon);
+    EXPECT_LT(abs(result.getGreen() - 0.1), epsilon);
+    EXPECT_LT(abs(result.getBlue() - 0.1), epsilon);
 }
 
 TEST(Shape, test_shape)
@@ -1098,14 +1097,13 @@ TEST(World, create_world)
 {
     World w;
     EXPECT_EQ(w.shapes.size(), 0);
-    EXPECT_EQ(w.light, nullptr);
 }
 
 TEST(World, default_world)
 {
     World w = World::defaultWorld();
 
-    Point p = w.light->getPos();
+    Point p = w.light.getPos();
     EXPECT_EQ(p.X(), -10);
     EXPECT_EQ(p.Y(), 10);
     EXPECT_EQ(p.Z(), -10);
@@ -1115,9 +1113,9 @@ TEST(World, default_world)
     std::shared_ptr<Shape> s = w.shapes[0];
     Material m = s->getMaterial();
     Color c = m.getColor();
-    EXPECT_LT(c.getRed() - 0.8, epsilon);
-    EXPECT_LT(c.getGreen() - 1.0, epsilon);
-    EXPECT_LT(c.getBlue() - 0.6, epsilon);
+    EXPECT_LT(abs(c.getRed() - 0.8), epsilon);
+    EXPECT_LT(abs(c.getGreen() - 1.0), epsilon);
+    EXPECT_LT(abs(c.getBlue() - 0.6), epsilon);
 
     s = w.shapes[1];
     Matrix<4,4> t1 = Matrix<4,4>::identity();
@@ -1152,4 +1150,138 @@ TEST(World, precompute_intersection)
     EXPECT_EQ(c.point == Point(0,0,-1), true);
     EXPECT_EQ(c.eyev == Vector(0,0,-1), true);
     EXPECT_EQ(c.normalv == Vector(0,0,-1), true);
+}
+
+TEST(World, outside_intersection)
+{
+    Ray r(Point(0,0,-5),Vector(0,0,1));
+    std::shared_ptr<Sphere> s(new Sphere());
+    Intersection i(4, s);
+    RayComputations c = r.prepareComputations(i);
+    EXPECT_EQ(c.inside, false);
+}
+
+TEST(World, inside_intersection)
+{
+    Ray r(Point(0,0,0),Vector(0,0,1));
+    std::shared_ptr<Sphere> s(new Sphere());
+    Intersection i(1, s);
+    RayComputations c = r.prepareComputations(i);
+    EXPECT_EQ(c.point == Point(0,0,1), true);
+    EXPECT_EQ(c.eyev == Vector(0,0,-1), true);
+    EXPECT_EQ(c.inside, true);
+    EXPECT_EQ(c.normalv == Vector(0,0,-1), true);
+}
+
+TEST(World, shade_intersection)
+{
+    World w = World::defaultWorld();
+    Ray r(Point(0,0,-5),Vector(0,0,1));
+    std::shared_ptr<Shape> s = w.shapes[0];
+    Intersection i(4, s);
+    RayComputations comps = r.prepareComputations(i);
+    Color color = w.shadeHit(comps);
+    EXPECT_LT(abs(color.getRed() - 0.38066), epsilon);
+    EXPECT_LT(abs(color.getGreen() - 0.47583), epsilon);
+    EXPECT_LT(abs(color.getBlue() - 0.2855), epsilon);    
+}
+
+TEST(World, shade_intersection_inside)
+{
+    World w = World::defaultWorld();
+    w.light = PointLight(Color(1,1,1), Point(0,0.25,0));
+    Ray r(Point(0,0,0),Vector(0,0,1));
+    std::shared_ptr<Shape> s = w.shapes[1];
+    Intersection i(0.5, s);
+    RayComputations comps = r.prepareComputations(i);
+    Color color = w.shadeHit(comps);
+    EXPECT_LT(abs(color.getRed() - 0.90498), epsilon);
+    EXPECT_LT(abs(color.getGreen() - 0.90498), epsilon);
+    EXPECT_LT(abs(color.getBlue() - 0.90498), epsilon);        
+}
+
+TEST(World,color_at_miss)
+{
+    World w = World::defaultWorld();
+    Ray r(Point(0,0,-5), Vector(0,1,0));
+    Color c = w.colorAt(r);
+    EXPECT_EQ(c.getRed(), 0);
+    EXPECT_EQ(c.getGreen(), 0);
+    EXPECT_EQ(c.getBlue(), 0);
+}
+
+TEST(World, color_at_hit)
+{
+    World w = World::defaultWorld();
+    Ray r(Point(0,0,-5), Vector(0,0,1));
+    Color c = w.colorAt(r);
+    EXPECT_LT(abs(c.getRed() - 0.38066), epsilon);
+    EXPECT_LT(abs(c.getGreen() - 0.47583), epsilon);
+    EXPECT_LT(abs(c.getBlue() - 0.2855), epsilon);    
+}
+
+TEST(World, color_intersection_behind_ray)
+{
+    World w = World::defaultWorld();
+    std::shared_ptr<Shape> outer = w.shapes[0];
+    std::shared_ptr<Shape> inner = w.shapes[1];
+    Material outer_material = outer->getMaterial();
+    Material inner_material = inner->getMaterial();
+    outer_material.setAmbient(1);
+    inner_material.setAmbient(1);
+    outer->setMaterial(outer_material);
+    inner->setMaterial(inner_material);
+    Ray r(Point(0,0,0.75), Vector(0,0,-1));
+
+    Color c = w.colorAt(r);
+    EXPECT_EQ(c.getRed(), inner_material.getColor().getRed());
+    EXPECT_EQ(c.getBlue(), inner_material.getColor().getBlue());
+    EXPECT_EQ(c.getGreen(), inner_material.getColor().getGreen());
+}
+
+TEST(World, view_transform_default)
+{
+    Point from(0,0,0);
+    Point to(0,0,-1);
+    Vector up(0,1,0);
+    Matrix<4,4> t = World::viewTransform(from, to, up);
+    Matrix<4,4> i = Matrix<4,4>::identity();
+    EXPECT_EQ(t == i, true);
+}
+
+TEST(World, view_transform_pos_z)
+{
+    Point from(0,0,0);
+    Point to(0,0,1);
+    Vector up(0,1,0);
+    Matrix<4,4> t = World::viewTransform(from, to, up);
+    Matrix<4,4> i = Matrix<4,4>::identity().scale(-1, 1, -1);
+    EXPECT_EQ(t == i, true);
+}
+
+TEST(World, view_transform_move_world)
+{
+    Point from(0,0,8);
+    Point to(0,0,0);
+    Vector up(0,1,0);
+    Matrix<4,4> t = World::viewTransform(from, to, up);
+    Matrix<4,4> i = Matrix<4,4>::identity().translate(0, 0, -8);
+    EXPECT_EQ(t == i, true);
+}
+
+TEST(World, view_arbitrary)
+{
+    Point from(1,3,2);
+    Point to(4,-2,8);
+    Vector up(1,1,0);
+    Matrix<4,4> t = World::viewTransform(from, to, up);
+    
+    float a[4][4] = { \
+        {-0.50709, 0.50709, 0.67612, -2.36643}, \
+        {0.76772, 0.60609, 0.12122, -2.82843}, \
+        {-0.35857, 0.59761, -0.71714, 0}, \
+        {0, 0, 0, 1}};
+    
+    Matrix<4,4> m(a);
+    EXPECT_EQ(t == m, true);
 }

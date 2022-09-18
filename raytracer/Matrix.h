@@ -5,6 +5,8 @@
 #include "Vector.h"
 #include "Point.h"
 
+constexpr float epsilon = 0.00002f;
+
 template <int ROWS, int COLS>
 class Matrix
 {
@@ -239,7 +241,7 @@ public:
 		for (int r = 0; r < ROWS; r++)
 			for (int c = 0; c < COLS; c++)
 			{
-				if (m[r][c] != n.get(r,c))
+				if (abs(m[r][c] - n.get(r,c)) > epsilon)
 					return false;
 			}
 
