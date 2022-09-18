@@ -19,6 +19,7 @@
 #include "../raytracer/Lighting.h"
 #include "../raytracer/World.h"
 #include "../raytracer/RayComputations.h"
+#include "../raytracer/Camera.h"
 
 TEST(Tuple, createtuple) 
 {
@@ -1284,4 +1285,26 @@ TEST(World, view_arbitrary)
     
     Matrix<4,4> m(a);
     EXPECT_EQ(t == m, true);
+}
+
+TEST(Camera, construct)
+{
+    Camera c(160, 120, -((float)PI)/2);
+    EXPECT_EQ(c.getHsize(), 160);
+    EXPECT_EQ(c.getVsize(), 120);
+    EXPECT_FLOAT_EQ(c.getFieldOfView(), -((float)PI)/2);
+    Matrix<4,4> i = Matrix<4,4>::identity();
+    EXPECT_EQ(c.getTransform() == i, true);
+}
+
+TEST(Camera, pixel_size_horizontal)
+{
+    Camera c(200, 125, -((float)PI)/2);
+    EXPECT_LT(abs(c.getPixelSize() - 0.01), true);
+}
+
+TEST(Camera, pixel_size_vertical)
+{
+    Camera c(125, 200, -((float)PI)/2);
+    EXPECT_LT(abs(c.getPixelSize() - 0.01), true);
 }
