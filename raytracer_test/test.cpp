@@ -288,8 +288,8 @@ TEST(Canvas, serializelonglines)
 
     Color color{ 1.0f, 0.8f, 0.6f };
 
-    for (int y = 0; y < c.height; y++)
-        for (int x = 0; x < c.width; x++)
+    for (unsigned int y = 0; y < c.height; y++)
+        for (unsigned int x = 0; x < c.width; x++)
         {
             c.write_pixel(x, y, color);
         }
@@ -552,9 +552,9 @@ TEST(Matrix, invertible)
 
 static float round_num(float f, int places)
 {
-    f = f * pow(10, places);
+    f = f * static_cast<float>(pow(10, places));
     f = round(f);
-    return f / pow(10, places);
+    return f / static_cast<float>(pow(10, places));
 }
 TEST(Matrix, inverse)
 {
@@ -565,10 +565,10 @@ TEST(Matrix, inverse)
         {-3, 0, -9, -4} };
 
     float inv[4][4]{
-        {-0.15385, -0.15385, -0.28205, -0.53846}, \
-        {-0.07692, 0.12308, 0.02564, 0.03077}, \
-        {0.35897, 0.35897, 0.43590, 0.92308}, \
-        {-0.69231, -0.69231, -0.76923, -1.92308} };
+        {-0.15385f, -0.15385f, -0.28205f, -0.53846f}, \
+        {-0.07692f, 0.12308f, 0.02564f, 0.03077f}, \
+        {0.35897f, 0.35897f, 0.43590f, 0.92308f}, \
+        {-0.69231f, -0.69231f, -0.76923f, -1.92308f} };
 
     Matrix d_inv = Matrix<4,4>{ d }.inverse();
 
@@ -585,10 +585,10 @@ TEST(Matrix, inverse)
         {-7, 6, 6, 2} };
 
     float inv2[4][4] = {
-        {-0.04074, -0.07778, 0.14444, -0.22222}, \
-        {-0.07778, 0.03333, 0.36667, -0.33333}, \
-        {-0.02901, -0.14630, -0.10926, 0.12963}, \
-        {0.17778, 0.06667, -0.26667, 0.33333} };
+        {-0.04074f, -0.07778f, 0.14444f, -0.22222f}, \
+        {-0.07778f, 0.03333f, 0.36667f, -0.33333f}, \
+        {-0.02901f, -0.14630f, -0.10926f, 0.12963f}, \
+        {0.17778f, 0.06667f, -0.26667f, 0.33333f} };
 
     d_inv = Matrix<4,4>{ d }.inverse();
 
@@ -938,7 +938,7 @@ TEST(Sphere, norm_of_translated)
 {
     Sphere s;
     s.setTransform(Matrix<4,4>::identity().translate(0, 1, 0));
-    Vector n = s.normal_at(Point{0, 1.70711, -0.70711});
+    Vector n = s.normal_at(Point{0.0f, 1.70711f, -0.70711f});
     EXPECT_LT(abs(n.X() - 0), epsilon);
     EXPECT_LT(abs(n.Y() - 0.70711), epsilon);
     EXPECT_LT(abs(n.Z() - -0.70711), epsilon);
@@ -1278,10 +1278,10 @@ TEST(World, view_arbitrary)
     Matrix<4,4> t = World::viewTransform(from, to, up);
     
     float a[4][4] = { \
-        {-0.50709, 0.50709, 0.67612, -2.36643}, \
-        {0.76772, 0.60609, 0.12122, -2.82843}, \
-        {-0.35857, 0.59761, -0.71714, 0}, \
-        {0, 0, 0, 1}};
+        {-0.50709f, 0.50709f, 0.67612f, -2.36643f}, \
+        {0.76772f, 0.60609f, 0.12122f, -2.82843f}, \
+        {-0.35857f, 0.59761f, -0.71714f, 0.0f}, \
+        {0.0f, 0.0f, 0.0f, 1.0f}};
     
     Matrix<4,4> m(a);
     EXPECT_EQ(t == m, true);

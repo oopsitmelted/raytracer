@@ -37,10 +37,10 @@ std::ostream& operator<<(std::ostream& os, Canvas& c)
 	// Header
 	os << "P3\n" << c.width << " " << c.height << '\n' << "255\n";
 	// Pixel values
-	for (int y = 0; y < c.height; y++)
+	for (unsigned int y = 0; y < c.height; y++)
 	{
 		line.clear();
-		for (int x = 0; x < c.width; x++)
+		for (unsigned int x = 0; x < c.width; x++)
 		{
 			if (line.length() > (70 - 12))
 			{
